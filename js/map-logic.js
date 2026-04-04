@@ -15,7 +15,7 @@ const originalImgWidth = 7300;
 const originalImgHeight = 7300; 
 
 const imageBounds = [[0, 0], [webImgSize, webImgSize]];
-L.imageOverlay('map.jpg', imageBounds).addTo(map);
+L.imageOverlay('images/map.jpg', imageBounds).addTo(map);
 
 function fitMapToScreen() {
     map.setMinZoom(-10);
