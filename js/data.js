@@ -162,7 +162,7 @@ const npcData = [
 
 const huntingGrounds = [
     { name: "경작지", lv: "0~5", monsters: "참새(lv.0), 허수아비(lv.5)", file: "map1.png", x: -960, y: 67, z: -670 },
-    { name: "화수원", lv: "10~20", monsters: "다람쥐(lv.10), 흙토끼(lv.15), 백토끼(lv.20)", file: "map2.png", x: -609, y: 95, z: -271 },
+    { name: "화수원", lv: "10~20", monsters: "다람쥐(lv.10), 흙토끼(lv.15), 백토끼(lv.20)", file: "map2.png", x: -586, y: 90, z: 443 },
     { name: "괴암곡", lv: "25~35", monsters: "하급쥐(lv.25), 중급쥐(lv30), 상급쥐(lv.35)", memo: "*괴암곡제단 : 장로쥐 소환", file: "map3.png", x: 1310, y: 176, z: -1592 },
     { name: "멸문", lv: "40~50", monsters: "뱀(lv.40), 청사(lv.45), 적사(lv.50)", memo: "*구렁이 출현", file: "map4.png", x: 3858, y: 131, z: -2635 },
     { name: "신선원", lv: "55~65", monsters: "새싹삼(lv.55), 진삼(lv.60), 대장삼(lv.65)", memo: "*거대삼 출현, *농장주인 소환 포탈", file: "map5.png", x: -3616, y: 244, z: -3096 },
