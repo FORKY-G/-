@@ -30,26 +30,27 @@ animals.forEach((ani) => {
     const marker = L.marker(pos, { icon: transparentIcon }).addTo(map);
 
     const popupContent = `
-        <div style="text-align:center; min-width:170px; color:#000;">
-            <div style="font-size:17px; font-weight:800; border-bottom:1px solid #999; padding-bottom:5px; margin-bottom:8px;">
+        <div style="text-align:center; min-width:200px; color:#000; padding: 5px 0;">
+            <div style="font-size:20px; font-weight:800; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">
                 ${ani.order}. ${ani.name}
             </div>
             
-            <div style="background:#333; border-radius:3px; padding:6px 0; margin-bottom:8px; cursor:pointer;" 
+            <div style="background:#333; border-radius:4px; padding:10px 0; margin-bottom:12px; cursor:pointer;" 
                  onclick="copyCoords(${ani.mcX}, ${ani.mcY}, ${ani.mcZ})">
-                <div style="color:#FFD700; font-size:13px; font-weight:600;">
+                <div style="color:#FFD700; font-size:15px; font-weight:700; letter-spacing:0.5px;">
                     ${ani.mcX}, ${ani.mcY}, ${ani.mcZ}
                 </div>
-                <div style="color:#aaa; font-size:9px; margin-top:2px;">(클릭하여 좌표 복사)</div>
+                <div style="color:#aaa; font-size:11px; margin-top:4px;">(클릭하여 좌표 복사)</div>
             </div>
 
-            <div style="color:#7000CA; font-weight:800; font-size:12px; margin-bottom:5px;">
+            <div style="color:#7000CA; font-weight:800; font-size:14px; margin-bottom:8px;">
                 *[히든]십이지신
             </div>
             
-            <div style="font-size:10px; color:#444; line-height:1.4; letter-spacing:-0.5px;">
-                쥐>소>호랑이><span style="color:#d00; font-weight:bold;">도사</span>>토끼>용>뱀><span style="color:#d00; font-weight:bold;">도사</span><br>
-                말>양>원숭이><span style="color:#d00; font-weight:bold;">도사</span>>닭>개>돼지><span style="color:#d00; font-weight:bold;">도사</span>
+            <div style="font-size:12px; color:#333; line-height:1.6; letter-spacing:-0.3px; font-weight:600;">
+                쥐 > 소 > 호랑이 > <span style="color:#d00; font-weight:800;">도사</span> > 토끼 > 용<br>
+                뱀 > <span style="color:#d00; font-weight:800;">도사</span> > 말 > 양 > 원숭이 > <span style="color:#d00; font-weight:800;">도사</span><br>
+                닭 > 개 > 돼지 > <span style="color:#d00; font-weight:800;">도사</span>
             </div>
         </div>
     `;
