@@ -29,21 +29,25 @@ window.addEventListener('resize', () => fitMapToScreen());
 
 // --- [좌표 동기화 (영점 조절) 로직] ---
 
-// 1. 기준점 A를 '스폰 위치'로 고정하고, 기준점 B를 남동쪽 끝(4번)으로 설정
-const refA = { mcX: -969, mcZ: -965, pxX: 3218, pxY: 3277 }; // 스폰 위치 데이터로 변경!
-const refB = { mcX: 7265, mcZ: 5293, pxX: 6874, pxY: 6046 };   
+// X축(동서) 배율: (6381 - 288) / (6123 - (-7547)) ≒ 0.44573
+// Z축(남북) 배율: (6552 - 765) / (6378 - (-6601)) ≒ 0.44587
+const scaleX = 0.445733; 
+const scaleZ = 0.445873; 
 
-// 2. 1블록당 픽셀 비율 및 오프셋 계산 (공식은 동일합니다)
-const scaleX = (refB.pxX - refA.pxX) / (refB.mcX - refA.mcX);
-const scaleZ = (refB.pxY - refA.pxY) / (refB.mcZ - refA.mcZ);
-const offsetX = refA.pxX - (refA.mcX * scaleX);
-const offsetZ = refA.pxY - (refA.mcZ * scaleZ);
+// 2. 4지점의 중간값을 역산하여 도출한 정밀 영점(Offset)
+const offsetX = 3652.23;
+const offsetZ = 3708.21;
 
-// 3. 변환 함수 (이하 동일)
+// 3. 변환 함수 (기존 로직 유지)
 function mcToPx(mcX, mcZ) {
+    // 원본 픽셀 좌표 계산
     const origPxX = (mcX * scaleX) + offsetX;
     const origPxY = (mcZ * scaleZ) + offsetZ;
+    
+    // 웹 이미지 크기 비율 적용 (현재 7300/7300이라 1:1)
     const webPxX = origPxX * (webImgSize / originalImgWidth);
     const webPxY = origPxY * (webImgSize / originalImgHeight);
+    
+    // Leaflet Simple CRS의 Y축 반전 대응 [Y, X]
     return [(webImgSize - webPxY), webPxX];
 }
