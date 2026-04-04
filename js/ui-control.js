@@ -39,7 +39,7 @@ const potIcon = L.icon({
 
 const boxIcon = L.icon({
     iconUrl: 'images/box.png',
-    iconSize: [36, 36],
+    iconSize: [25, 25],
     iconAnchor: [18, 18],
     popupAnchor: [0, -15]
 });
