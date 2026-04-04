@@ -67,9 +67,11 @@ animals.forEach((ani) => {
             </div>
         </div>
     `;
-    marker.bindPopup(popupContent, { autoPanPadding: [20, 20], keepInView: true });
-    marker.on('mouseover', () => polyline.setStyle({ opacity: 0.7 }));
-    marker.on('mouseout', () => polyline.setStyle({ opacity: 0 }));
+    marker.bindPopup(popupContent, {
+    autoPan: true,           // 팝업이 화면 밖이면 지도를 자동으로 움직임
+    autoPanPaddingTopLeft: [50, 50], // 왼쪽/위쪽 여백 확보 (천장 잘림 방지)
+    autoPanPaddingBottomRight: [50, 50], // 오른쪽/아래쪽 여백 확보
+    keepInView: true
 });
 
 // 5. 스폰 지점 마커
@@ -124,9 +126,12 @@ mines.forEach((mine) => {
         </div>
     `;
     
-    marker.bindPopup(popupContent, { autoPanPadding: [50, 50], keepInView: true });
-    marker.on('mouseover', () => minePolylines[mine.c].setStyle({ opacity: 0.8 }));
-    marker.on('mouseout', () => minePolylines[mine.c].setStyle({ opacity: 0 }));
+    marker.bindPopup(popupContent, {
+    // 팝업 위치를 마커 중심에서 살짝 아래로 내리고 싶다면 offset을 조정합니다.
+    // [가로, 세로] - 세로 값을 양수로 주면 아래로 내려옵니다.
+    offset: L.point(0, 10), 
+    autoPanPadding: [60, 60], // 창이 크므로 여유 공간을 더 넉넉히
+    keepInView: true
 });
 
 // 7. 적환단 마커 생성
@@ -165,5 +170,9 @@ redItems.forEach((item) => {
         </div>
     `;
 
-    marker.bindPopup(popupContent, { autoPanPadding: [30, 30], keepInView: true });
+   marker.bindPopup(popupContent, {
+    autoPan: true,           // 팝업이 화면 밖이면 지도를 자동으로 움직임
+    autoPanPaddingTopLeft: [50, 50], // 왼쪽/위쪽 여백 확보 (천장 잘림 방지)
+    autoPanPaddingBottomRight: [50, 50], // 오른쪽/아래쪽 여백 확보
+    keepInView: true
 });
