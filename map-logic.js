@@ -1,39 +1,53 @@
-// 1. Leaflet 지도 설정 
+// map-logic.js
+
 const map = L.map('map', {
     crs: L.CRS.Simple,
-    zoomSnap: 0,   // [핵심] 정수 단위가 아닌 미세한 줌 조절을 허용하여 잘림 없이 화면에 딱 맞춥니다.
-    maxZoom: 3     // 확대 한도
+    zoomSnap: 0,
+    maxZoom: 3
 });
 
-// 2. 픽셀크기
-const imgWidth = 7300;  // 가로
-const imgHeight = 7300; // 세로
+// 웹에 띄운 이미지의 실제 픽셀 크기 (압축 후에도 7300x7300을 유지했다면 7300)
+// 만약 4560으로 크기를 줄여서 압축했다면 이 숫자를 4560으로 바꿔주세요.
+const webImgSize = 7300; 
 
-// 3. 지도의 경계 설정
-const imageBounds = [[0, 0], [imgHeight, imgWidth]];
+// 픽셀 좌표를 측정한 원본 이미지의 크기
+const originalImgWidth = 7300;  
+const originalImgHeight = 7300; 
 
-// 4. 지도 이미지 띄우기
-L.imageOverlay('map.jpg', imageBounds).addTo(map);
+const imageBounds = [[0, 0], [webImgSize, webImgSize]];
+L.imageOverlay('hanwol-map.jpg', imageBounds).addTo(map);
 
-// 5. 화면 크기에 맞춰 맵 전체가 보이도록 자동 조절하는 함수
 function fitMapToScreen() {
-    // 줌 계산을 위해 일시적으로 최소 줌 제한 해제
     map.setMinZoom(-10);
-    
-    // 맵 전체가 화면에 완벽히 들어오도록 맞춤 (zoomSnap: 0 덕분에 여백이 생겨도 전체가 다 보임)
     map.fitBounds(imageBounds);
-    
-    // 딱 맞춰진 줌 레벨을 최소 줌으로 고정 (더 축소되지 않도록)
     map.setMinZoom(map.getZoom());
 }
-
-// 6. 처음 로드될 때 실행
 fitMapToScreen();
-
-// 7. 지도를 드래그할 때 이미지가 화면 밖으로 나가지 않게 영역 제한
 map.setMaxBounds(imageBounds);
+window.addEventListener('resize', () => fitMapToScreen());
 
-// 8. 사용자가 브라우저 창 크기를 조절할 때마다 다시 화면에 딱 맞게 재계산
-window.addEventListener('resize', () => {
-    fitMapToScreen();
-});
+
+// --- [좌표 동기화 (영점 조절) 로직] ---
+
+// 1. 측정하신 대각선 두 지점 (2번 북서쪽과 4번 남동쪽 데이터 사용)
+const refA = { mcX: -5321, mcZ: -5519, pxX: 1277, pxY: 1246 }; 
+const refB = { mcX: 7265, mcZ: 5293, pxX: 6874, pxY: 6046 };   
+
+// 2. 1블록당 픽셀 비율 및 오프셋 계산
+const scaleX = (refB.pxX - refA.pxX) / (refB.mcX - refA.mcX);
+const scaleZ = (refB.pxY - refA.pxY) / (refB.mcZ - refA.mcZ);
+const offsetX = refA.pxX - (refA.mcX * scaleX);
+const offsetZ = refA.pxY - (refA.mcZ * scaleZ);
+
+// 3. 변환 함수 (마크 좌표 -> 웹 지도 좌표)
+function mcToPx(mcX, mcZ) {
+    const origPxX = (mcX * scaleX) + offsetX;
+    const origPxY = (mcZ * scaleZ) + offsetZ;
+
+    // 현재 화면에 띄운 웹 이미지 해상도에 맞게 스케일 조정
+    const webPxX = origPxX * (webImgSize / originalImgWidth);
+    const webPxY = origPxY * (webImgSize / originalImgHeight);
+
+    // Leaflet 좌표계(위에서 아래로 내려오는 Y축 보정)로 변환
+    return [(webImgSize - webPxY), webPxX];
+}
