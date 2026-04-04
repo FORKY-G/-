@@ -4,57 +4,52 @@
     <meta charset="UTF-8">
     <title>한월환해도 (0404 업데이트)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
- <style>
-        /* 1. 깔끔하고 가독성 좋은 고딕체 폰트 (Pretendard) 불러오기 */
-        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+<style>
+    /* 1. 고딕체 폰트 불러오기 (동일) */
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 
-        body { 
-            margin: 0; padding: 0; background-color: #1a1a1a; 
-            /* 사이트 전체에 고딕체 폰트 적용 및 굵게 설정 */
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
-            font-weight: 700; /* 글씨를 굵게 설정하여 마크 느낌 강화 */
-        }
+    body { 
+        margin: 0; padding: 0; background-color: #1a1a1a; 
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 700; 
+    }
+    
+    #map { width: 100vw; height: 100vh; }
+    
+    /* 2. 마인크래프트 UI 창 - 크기 및 테두리 축소 */
+    .leaflet-popup-content-wrapper {
+        background-color: #c6c6c6; 
+        border: 2px solid #000000; /* 테두리 3px -> 2px로 축소 */
+        border-radius: 0; 
+        /* 입체감(Bevel) 효과도 3px -> 2px로 축소 */
+        box-shadow: inset 2px 2px 0px #ffffff, inset -2px -2px 0px #555555 !important; 
+        padding: 0px; /* 내부 패딩 제거 */
+        min-width: 50px; /* 최소 너비 제한 해제 */
+    }
+
+    .leaflet-popup-tip-container {
+        display: none;
+    }
+
+    /* 3. 글씨 및 그림자 스타일 - 절반 수준으로 축소 */
+    .leaflet-popup-content {
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 700;
+        font-size: 13px; /* 19px -> 13px로 대폭 축소 */
+        text-align: center;
+        color: #ffffff; 
+        margin: 8px 12px !important; /* 여백 14/20 -> 8/12로 축소 (말풍선 크기 결정) */
+        line-height: 1.3;
+        letter-spacing: -0.5px; 
         
-        #map { width: 100vw; height: 100vh; }
-        
-        /* 2. 마인크래프트 인벤토리/버튼 스타일의 UI 창 */
-        .leaflet-popup-content-wrapper {
-            background-color: #c6c6c6; /* 마크 특유의 밝은 회색 바탕 */
-            border: 3px solid #000000; /* 바깥쪽 굵은 검은색 테두리 */
-            border-radius: 0; /* 둥근 모서리 완전 제거 */
-            
-            /* [핵심] 안쪽 하얀색 & 어두운 회색 테두리로 입체감(Bevel) 만들기 */
-            box-shadow: inset 3px 3px 0px #ffffff, inset -3px -3px 0px #555555 !important; 
-            padding: 2px;
-        }
+        /* 텍스트 그림자 두께 축소 */
+        text-shadow: 1.5px 1.5px 0px #000000; 
+    }
 
-        /* 말풍선 아래의 뾰족한 꼬리표 숨기기 (깔끔한 네모를 위해) */
-        .leaflet-popup-tip-container {
-            display: none;
-        }
-
-        /* 3. 고딕 글씨 및 마인크래프트식 굵은 그림자 스타일 */
-        .leaflet-popup-content {
-            font-family: 'Pretendard', sans-serif; /* 고딕체 적용 */
-            font-weight: 700; /* 굵게 */
-            font-size: 19px; /* 글씨 크기 약간 키움 */
-            text-align: center;
-            color: #ffffff; /* 글자색은 흰색 */
-            margin: 14px 20px !important; /* 여백 조정 */
-            line-height: 1.4;
-            letter-spacing: -0.5px; /* 글자 간격을 좁혀 가독성 향상 */
-            
-            /* [핵심] 마인크래프트 한글 폰트 특유의 굵고 뚜렷한 검은색 텍스트 그림자 */
-            text-shadow: 
-                2px 2px 0px #000000, 
-                2.5px 2.5px 0px #000000;
-        }
-
-        /* 닫기(X) 버튼 숨기기 */
-        .leaflet-popup-close-button {
-            display: none !important;
-        }
-    </style>
+    .leaflet-popup-close-button {
+        display: none !important;
+    }
+</style>
 </head>
 <body>
 
