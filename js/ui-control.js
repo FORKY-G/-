@@ -1,19 +1,17 @@
-// js/ui-control.js
-
-// [0] 레이어 그룹 정의 (체크박스 제어용)
 const layers = {
-    stones: L.layerGroup().addTo(map),
-    npc: L.layerGroup().addTo(map),
-    red: L.layerGroup().addTo(map),
-    pot: L.layerGroup().addTo(map),
-    box: L.layerGroup().addTo(map),
+    // .addTo(map)을 제거하여 처음엔 지도가 비어있게 설정합니다.
+    stones: L.layerGroup(), 
+    npc: L.layerGroup(),
+    red: L.layerGroup(),
+    pot: L.layerGroup(),
+    box: L.layerGroup(),
     mines: {
-        "녹": L.layerGroup().addTo(map),
-        "청": L.layerGroup().addTo(map),
-        "황": L.layerGroup().addTo(map),
-        "적": L.layerGroup().addTo(map)
+        "녹": L.layerGroup(),
+        "청": L.layerGroup(),
+        "황": L.layerGroup(),
+        "적": L.layerGroup()
     },
-    hunting: {} // 사냥터는 개별 제어를 위해 객체로 관리
+    hunting: {}
 };
 
 // [1] 공용 아이콘 정의 모음
