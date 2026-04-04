@@ -338,8 +338,8 @@ huntingGrounds.forEach((area) => {
             layers.hunting[area.name].addTo(map);
             layers.huntingMarkers[area.name].addTo(map);
 
-            // [심화] 부드러운 이동 및 확대 (확대 레벨 4)
-            map.flyTo(targetPos, 2, {
+            // [심화] 부드러운 이동 및 확대
+            map.flyTo(targetPos, 1, {
                 animate: true,
                 duration: 1.0
             });
@@ -347,7 +347,7 @@ huntingGrounds.forEach((area) => {
             // 이동 후 팝업 자동 열기 (0.6초 뒤)
             setTimeout(() => {
                 layers.huntingMarkers[area.name].openPopup();
-            }, 600);
+            }, 500);
         } else {
             // 체크 해제 시 제거
             map.removeLayer(layers.hunting[area.name]);
