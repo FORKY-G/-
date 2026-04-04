@@ -1,5 +1,21 @@
 // js/ui-control.js
 
+// [0] 레이어 그룹 정의 (체크박스 제어용)
+const layers = {
+    stones: L.layerGroup().addTo(map),
+    npc: L.layerGroup().addTo(map),
+    red: L.layerGroup().addTo(map),
+    pot: L.layerGroup().addTo(map),
+    box: L.layerGroup().addTo(map),
+    mines: {
+        "녹": L.layerGroup().addTo(map),
+        "청": L.layerGroup().addTo(map),
+        "황": L.layerGroup().addTo(map),
+        "적": L.layerGroup().addTo(map)
+    },
+    hunting: {} // 사냥터는 개별 제어를 위해 객체로 관리
+};
+
 // [1] 공용 아이콘 정의 모음
 const compassIcon = L.icon({
     iconUrl: 'images/compass.png',
@@ -41,7 +57,7 @@ const npcIcon = L.icon({
     iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -20]
 });
 
-// [2] 십이지신 동선 설정
+// [2] 십이지신 동선 설정 (항상 표시)
 const animalPathPoints = animals.map(ani => mcToPx(ani.mcX, ani.mcZ));
 const polyline = L.polyline(animalPathPoints, {
     color: '#FFD700', weight: 2, opacity: 0, dashArray: '5, 8'
@@ -59,7 +75,7 @@ Object.keys(minePaths).forEach(colorKey => {
 
     minePolylines[colorKey] = L.polyline(pathCoords, {
         color: mineColors[colorKey], weight: 3, opacity: 0, dashArray: '7, 10'
-    }).addTo(map);
+    }).addTo(layers.mines[colorKey]); // 광산 레이어 그룹에 추가
 });
 
 // [4] 좌표 복사 함수
@@ -72,7 +88,7 @@ window.copyCoords = (x, y, z) => {
     });
 };
 
-// [5] 십이지신 마커 생성
+// [5] 십이지신 마커 생성 (항상 표시)
 animals.forEach((ani) => {
     const pos = mcToPx(ani.mcX, ani.mcZ);
     const marker = L.marker(pos, { icon: transparentIcon }).addTo(map);
@@ -94,7 +110,7 @@ animals.forEach((ani) => {
     marker.on('mouseout', () => polyline.setStyle({ opacity: 0 }));
 });
 
-// [6] 스폰 지점 마커
+// [6] 스폰 지점 마커 (항상 표시)
 L.marker(mcToPx(spawnData.mcX, spawnData.mcZ), { icon: compassIcon })
     .addTo(map)
     .bindPopup(`<div style="color:#000; font-weight:bold; font-size:14px; text-align:center;">스폰 지점</div>`);
@@ -106,7 +122,7 @@ mines.forEach((mine) => {
     let markerClass = `mine-marker mine-${mine.c}`;
     if (specialNumbers.includes(mine.n)) markerClass += " special-mine";
     const mineIcon = L.divIcon({ className: markerClass, iconSize: [18, 18], iconAnchor: [9, 9] });
-    const marker = L.marker(pos, { icon: mineIcon }).addTo(map);
+    const marker = L.marker(pos, { icon: mineIcon }).addTo(layers.mines[mine.c]); // 광산 레이어 그룹에 추가
     const specificOres = mineResources[mine.c];
     const commonOres = mineResources["공통"];
     const pathList = minePaths[mine.c].join(' > ');
@@ -131,7 +147,7 @@ mines.forEach((mine) => {
 // [8] 적환단 마커 생성
 redItems.forEach((item) => {
     const pos = mcToPx(item.x, item.z);
-    const marker = L.marker(pos, { icon: redIcon }).addTo(map);
+    const marker = L.marker(pos, { icon: redIcon }).addTo(layers.red); // 적환단 레이어 그룹에 추가
     const popupContent = `
         <div style="text-align:center; min-width:200px; color:#000; padding: 0;">
             <div style="font-size:18px; font-weight:800; border-bottom:2px solid #000; padding: 5px 0; margin-bottom: 10px;">적환단</div>
@@ -151,7 +167,7 @@ redItems.forEach((item) => {
 const hanwolManual = statues.find(st => st.name === "한월동상");
 if (hanwolManual) {
     const hanwolPos = [(7300 - 1246), 1278]; 
-    const hMarker = L.marker(hanwolPos, { icon: stone2Icon }).addTo(map);
+    const hMarker = L.marker(hanwolPos, { icon: stone2Icon }).addTo(layers.stones); // 산/동상 레이어 그룹에 추가
     const hPopupContent = `
         <div style="text-align:center; min-width:200px; color:#000; padding: 0;">
             <div style="font-size:18px; font-weight:800; border-bottom:2px solid #000; padding: 5px 0; margin-bottom: 10px;">${hanwolManual.name}</div>
@@ -169,7 +185,7 @@ if (hanwolManual) {
 
 statues.filter(st => st.name !== "한월동상").forEach((st) => {
     const pos = mcToPx(st.x, st.z);
-    const marker = L.marker(pos, { icon: stone2Icon }).addTo(map);
+    const marker = L.marker(pos, { icon: stone2Icon }).addTo(layers.stones);
     const popupContent = `
         <div style="text-align:center; min-width:200px; color:#000; padding: 0;">
             <div style="font-size:18px; font-weight:800; border-bottom:2px solid #000; padding: 5px 0; margin-bottom: 10px;">${st.name}</div>
@@ -188,7 +204,7 @@ statues.filter(st => st.name !== "한월동상").forEach((st) => {
 // [10] 비석(산) 마커 생성
 mountains.forEach((mt) => {
     const pos = mcToPx(mt.x, mt.z);
-    const marker = L.marker(pos, { icon: stoneIcon }).addTo(map);
+    const marker = L.marker(pos, { icon: stoneIcon }).addTo(layers.stones);
     const popupContent = `
         <div style="text-align:center; min-width:180px; color:#000; padding: 0;">
             <div style="font-size:18px; font-weight:800; border-bottom:2px solid #000; padding: 5px 0; margin-bottom: 10px;">${mt.name}</div>
@@ -204,7 +220,7 @@ mountains.forEach((mt) => {
 // [11] 항아리 마커 생성
 potItems.forEach((pot) => {
     const pos = mcToPx(pot.x, pot.z);
-    const marker = L.marker(pos, { icon: potIcon }).addTo(map);
+    const marker = L.marker(pos, { icon: potIcon }).addTo(layers.pot); // 탐색 레이어 그룹에 추가
     const popupContent = `
         <div style="text-align:center; min-width:200px; color:#000; padding: 0; line-height: 1.3;">
             <div style="font-size:18px; font-weight:800; border-bottom:2px solid #000; padding: 5px 0; margin-bottom: 10px;">${pot.name}</div>
@@ -224,7 +240,7 @@ potItems.forEach((pot) => {
 // [12] 의문의 상자 마커 생성
 mysteryBoxes.forEach((box) => {
     const pos = mcToPx(box.x, box.z);
-    const marker = L.marker(pos, { icon: boxIcon }).addTo(map);
+    const marker = L.marker(pos, { icon: boxIcon }).addTo(layers.box); // 상자 레이어 그룹에 추가
     const itemInfo = box.item ? `<div style="margin-bottom:4px;"><span style="color:#666; font-weight:700;">획득아이템:</span> ${box.item}</div>` : '';
     const entranceInfo = box.entrance ? `<div style="margin-top:4px; padding: 4px; background: #fff1f1; border-radius: 4px; border: 1px dashed #d00;"><span style="color:#d00; font-weight:800;">[진입입구]</span><br><span style="font-size:11px; font-weight:700;">${box.entrance}</span></div>` : '';
     const popupContent = `
@@ -244,7 +260,7 @@ mysteryBoxes.forEach((box) => {
 npcData.forEach((npc) => {
     const pos = mcToPx(npc.x, npc.z);
     let currentIcon = npc.file === "transparent" ? transparentIcon : L.icon({ iconUrl: `images/${npc.file}`, iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -20] });
-    const marker = L.marker(pos, { icon: currentIcon }).addTo(map);
+    const marker = L.marker(pos, { icon: currentIcon }).addTo(layers.npc); // NPC 레이어 그룹에 추가
     const lvInfo = npc.lv ? `<span style="font-size:12px; color:#666; font-weight:normal;"> (lv.${npc.lv})</span>` : '';
     const questInfo = npc.quest ? `<div style="margin-bottom:4px;"><span style="color:#d00; font-weight:800;">[퀘스트]</span> ${npc.quest}</div>` : '';
     const itemInfo = npc.item ? `<div style="margin-bottom:4px;"><span style="color:#007bff; font-weight:800;">[필요아이템]</span> ${npc.item}</div>` : '';
@@ -266,10 +282,26 @@ npcData.forEach((npc) => {
 
 // [14] 사냥터 영역 이미지 오버레이 생성
 const huntingImageBounds = [[0, 0], [7300, 7300]]; 
+const huntingListContainer = document.getElementById('hunt-accordion-content');
+
 huntingGrounds.forEach((area) => {
     const overlay = L.imageOverlay(`images/${area.file}`, huntingImageBounds, {
         opacity: 0.5, interactive: true
-    }).addTo(map);
+    }).addTo(map); // 초기에는 지형 확인을 위해 켜두거나 취향껏 설정 가능
+
+    layers.hunting[area.name] = overlay;
+
+    // 아코디언 메뉴 내부에 체크박스 동적 생성
+    const label = document.createElement('label');
+    label.className = 'control-item';
+    label.innerHTML = `<input type="checkbox" id="hunt-${area.name}" checked> ${area.name}`;
+    huntingListContainer.appendChild(label);
+
+    // 이벤트 연결
+    document.getElementById(`hunt-${area.name}`).addEventListener('change', function(e) {
+        if(e.target.checked) layers.hunting[area.name].addTo(map);
+        else map.removeLayer(layers.hunting[area.name]);
+    });
 
     const memoInfo = area.memo ? `<div style="margin-top:4px; color:#d00; font-weight:700;">${area.memo}</div>` : '';
     const popupContent = `
@@ -285,6 +317,27 @@ huntingGrounds.forEach((area) => {
     overlay.on('mouseover', function () { this.setOpacity(0.8); });
     overlay.on('mouseout', function () { this.setOpacity(0.5); });
 });
+
+// [15] 체크박스 이벤트 연결 시스템
+const bindCheckbox = (id, layer) => {
+    const checkbox = document.getElementById(id);
+    if (checkbox) {
+        checkbox.addEventListener('change', function(e) {
+            if(e.target.checked) layer.addTo(map);
+            else map.removeLayer(layer);
+        });
+    }
+};
+
+bindCheckbox('check-stones', layers.stones);
+bindCheckbox('check-npc', layers.npc);
+bindCheckbox('check-red', layers.red);
+bindCheckbox('check-pot', layers.pot);
+bindCheckbox('check-box', layers.box);
+bindCheckbox('mine-녹', layers.mines["녹"]);
+bindCheckbox('mine-청', layers.mines["청"]);
+bindCheckbox('mine-황', layers.mines["황"]);
+bindCheckbox('mine-적', layers.mines["적"]);
 
 // [최종] 잘림 방지 보정 스크립트
 map.on('popupopen', function(e) {
