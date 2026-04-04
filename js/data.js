@@ -134,3 +134,26 @@ const mysteryBoxes = [
     { name: "의문의 상자", x: 1124, y: 258, z: 1498, item: "일반부적뽑기"},
     { name: "의문의 상자", x: -3979, y: 80, z: 2501 }
 ];
+
+// NPC 데이터
+
+const npcData = [
+    { name: "도사", lv: 50, x: -1293, y: 290, z: -598, quest: "[히든]십이지신, [히든]호리병을 찾아서", route: "도사-도공-멸문대-도사", reward: "금환단, 파력검법", memo: "[히든]심마니", file: "dosa.png" },
+    { name: "도공", lv: 50, x: -4778, y: 67, z: 1454, quest: "[히든]호리병을 찾아서", item: "무괴철 1개, 자금 3개", route: "도공 > 멸문대(수상한포탈)", file: "dogong.png" },
+    { name: "상단주", lv: 50, x: -3260, y: 123, z: -4287, quest: "[히든]상단주", route: "상단주 > 부숴진마차", reward: "금환단", file: "owner.png" },
+    { name: "부숴진마차", x: -2706, y: 71, z: -2372, quest: "[히든]상단주", route: "부숴진마차 > 자운스님", file: "macha.png" },
+    { name: "자운스님", lv: 50, x: -4366, y: 194, z: 1399, quest: "[히든]상단주", item: "향목가루 5개", route: "자운스님 > 상단주", file: "jaun.png" },
+    { name: "해진", lv: 50, x: -4310, y: 129, z: 5838, quest: "[히든]해적선", route: "해진 > 해적선", reward: "금환단", file: "haejin.png" },
+    { name: "해적선", x: -3622, y: 65, z: 4043, quest: "[히든]해적선", route: "훔친백향초찾기 - 수상한포탈 > 해적잡기", file: "transparent" }, // 투명 처리용 키워드
+    { name: "백향초재배지", x: -5488, y: 66, z: 4162, quest: "[히든]해적선", route: "수상한포탈 > 해진", file: "portal.png" },
+    { name: "점소이", x: -2537, y: 79, z: -5994, quest: "???", file: "jumsoi.png" },
+    { name: "주루대주", x: -2545, y: 79, z: -6022, quest: "???", file: "juru.png" },
+    { name: "심마니", lv: 90, x: -3485, y: 80, z: -1950, quest: "오공퀘스트", file: "simmani.png" },
+    { name: "척후병", lv: 100, x: -3963, y: 148, z: 2613, quest: "???", file: "scout.png" },
+    { name: "몰락한소가주", x: 3139, y: 78, z: -2583, quest: "???", file: "sogaju.png" },
+    { name: "조사중인스님", x: 391, y: 97, z: -1518, quest: "???", file: "josa.png" },
+    { name: "연운객", lv: 50, x: -5689, y: 248, z: 3291, quest: "하늘을좇는자", route: "연운객 > 시녀", reward: "창천검법", file: "yeonun.png" },
+    { name: "명인대장장이", x: -7047, y: 74, z: -727, quest: "???", file: "mungin.png" },
+    { name: "망한대장장이", x: 5365, y: 73, z: -3467, quest: "[히든]심마니", item: "은괴 3개, 무괴철 3개", file: "mang.png" },
+    { name: "감시관", lv: 67, x: 5176, y: 76, z: 4582, quest: "[메인]퀘스트", item: "사보도 1개, 철 3개, 무공정수 10개", file: "gamsi.png" }
+];
