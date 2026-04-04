@@ -8,7 +8,9 @@ const compassIcon = L.icon({
 
 const transparentIcon = L.icon({
     iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==', 
-    iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]
+    iconSize: [40, 40], // 크기 확대
+    iconAnchor: [20, 20], // 중심점 조정
+    popupAnchor: [0, -20] // 팝업 위치 조정
 });
 
 const redIcon = L.icon({
@@ -23,7 +25,9 @@ const stoneIcon = L.icon({
 
 const stone2Icon = L.icon({ 
     iconUrl: 'images/stone2.png', 
-    iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -10] 
+    iconSize: [36, 36], // 크기 확대
+    iconAnchor: [18, 18], // 중심점 조정
+    popupAnchor: [0, -15] // 팝업 위치 조정
 });
 
 // [2] 십이지신 동선 설정
