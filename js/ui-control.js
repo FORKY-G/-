@@ -324,7 +324,7 @@ huntingGrounds.forEach((area) => {
             layers.hunting[area.name].addTo(map);
             hMarker.addTo(map);
             // 사냥터 이동 시 확대 배율 조정
-            map.flyTo(targetPos, 0, { animate: true, duration: 0.5 }); 
+            map.flyTo(targetPos, -1, { animate: true, duration: 0.5 }); 
             setTimeout(() => { hMarker.openPopup(); }, 500);
         } else {
             map.removeLayer(layers.hunting[area.name]);
@@ -526,7 +526,7 @@ function moveToLocation(target) {
 
     // [수정] 약초 타입이 아닐 때만 지도를 이동하고 확대합니다.
     if (target.type !== 'herb') {
-        map.flyTo(targetPos, 0, { animate: true, duration: 0.5 });
+        map.flyTo(targetPos, -1, { animate: true, duration: 0.5 });
     }
 
     setTimeout(() => {
