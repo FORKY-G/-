@@ -323,7 +323,7 @@ huntingGrounds.forEach((area) => {
         if(e.target.checked) {
             layers.hunting[area.name].addTo(map);
             hMarker.addTo(map);
-            map.flyTo(targetPos, 4, { animate: true, duration: 1.0 }); 
+            map.flyTo(targetPos, 0.5, { animate: true, duration: 1.0 }); 
             setTimeout(() => { hMarker.openPopup(); }, 500);
         } else {
             map.removeLayer(layers.hunting[area.name]);
@@ -529,7 +529,7 @@ function selectSearchResult(item) {
 
 function moveToLocation(target) {
     const targetPos = mcToPx(target.x, target.z);
-    map.flyTo(targetPos, 1, { animate: true, duration: 1.0 });
+    map.flyTo(targetPos, 0.5, { animate: true, duration: 1.0 });
 
     setTimeout(() => {
         let foundMarker = null;
