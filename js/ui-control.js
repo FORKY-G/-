@@ -278,7 +278,7 @@ npcData.forEach((npc) => {
     marker.bindPopup(popupContent, { autoPan: false, keepInView: true, closeButton: false, offset: L.point(0, -5) });
 });
 
-// [14] 사냥터 영역 및 투명 마커 생성 (수정본)
+// [14] 사냥터 영역 및 투명 마커 생성
 const huntingImageBounds = [[0, 0], [7300, 7300]]; 
 const huntingListContainer = document.getElementById('hunt-accordion-content');
 
@@ -293,7 +293,7 @@ huntingGrounds.forEach((area) => {
     const hMarker = L.marker(targetPos, { 
         icon: transparentIcon,
         zIndexOffset: -500
-    }).addTo(layers.huntingMarkers); // 검색용 그룹에 추가
+    }).addTo(layers.huntingMarkers); 
 
     const label = document.createElement('label');
     label.className = 'control-item';
@@ -323,9 +323,9 @@ huntingGrounds.forEach((area) => {
         if(e.target.checked) {
             layers.hunting[area.name].addTo(map);
             hMarker.addTo(map);
-            // 사냥터 이동 시 확대 배율 조정
-            map.flyTo(targetPos, -1, { animate: true, duration: 0.5 }); 
-            setTimeout(() => { hMarker.openPopup(); }, 500);
+            // 버벅임 개선: 속도 상향 및 배율 최적화
+            map.flyTo(targetPos, -1, { animate: true, duration: 0.4 }); 
+            setTimeout(() => { hMarker.openPopup(); }, 450);
         } else {
             map.removeLayer(layers.hunting[area.name]);
             map.removeLayer(hMarker);
@@ -336,15 +336,14 @@ huntingGrounds.forEach((area) => {
     overlay.on('mouseout', function () { this.setOpacity(0.5); });
 });
 
-// [15] 약초 시스템 (희귀 표시 및 멀티 마커 지원)
+// [15] 약초 시스템 (희귀 정렬 + 데이터 아이콘 매칭 + 이동 제거)
 const herbListContainer = document.getElementById('herb-accordion-content');
 layers.herbs = {};
 layers.herbMarkers = {};
 
-// 희귀 약초 리스트
 const rareHerbs = ["홍련업화", "철목영지", "금향과", "월계엽", "빙백설화"];
 
-herbData.sort((a, b) => {
+const sortedHerbData = [...herbData].sort((a, b) => {
     const aRare = rareHerbs.includes(a.name);
     const bRare = rareHerbs.includes(b.name);
     if (aRare && !bRare) return -1;
@@ -352,7 +351,7 @@ herbData.sort((a, b) => {
     return a.name.localeCompare(b.name, 'ko');
 });
 
-herbData.forEach((herb) => {
+sortedHerbData.forEach((herb) => {
     const isRare = rareHerbs.includes(herb.name);
     const rareTag = isRare ? '<span style="color: #ff0000; font-weight: bold; margin-left: 5px;">(희귀)</span>' : '';
 
@@ -365,7 +364,6 @@ herbData.forEach((herb) => {
     herb.locations.forEach(loc => {
         const pos = mcToPx(loc.x, loc.z);
         const hMarker = L.marker(pos, { icon: transparentIcon });
-        
         const popupContent = `
             <div style="text-align:center; min-width:180px; color:#000;">
                 <div style="font-size:16px; font-weight:800; border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:8px;">
@@ -373,7 +371,6 @@ herbData.forEach((herb) => {
                 </div>
                 <div style="background:#333; color:#FFD700; border-radius:4px; padding:6px; cursor:pointer; font-size:14px; font-weight:700;" onclick="copyCoords(${loc.x}, 0, ${loc.z})">
                     ${loc.x}, ${loc.z}
-                    <div style="color:#aaa; font-size:10px; font-weight:normal; margin-top:2px;">(클릭하여 좌표 복사)</div>
                 </div>
             </div>
         `;
@@ -386,13 +383,17 @@ herbData.forEach((herb) => {
     label.className = 'control-item';
     label.style.display = 'flex';
     label.style.alignItems = 'center';
+
+    // 데이터 아이콘 명칭(hub1.png)을 바탕으로 새 파일명(hub-1.png) 생성
+    const listIcon = herb.icon.replace('hub', 'hub-'); 
+
     label.innerHTML = `
         <input type="checkbox" id="herb-${herb.name}"> 
-        <span style="flex:1; margin-left:8px;">${herb.name}${rareTag}</span>
+        <img src="images/${listIcon}" style="width:20px; height:20px; margin-right:8px; object-fit:contain;" onerror="this.style.display='none'">
+        <span style="flex:1;">${herb.name}${rareTag}</span>
     `;
     if(herbListContainer) herbListContainer.appendChild(label);
 
-    // 약초 체크박스 이벤트 (이동 및 확대 제거)
     document.getElementById(`herb-${herb.name}`).addEventListener('change', function(e) {
         if(e.target.checked) {
             layers.herbs[herb.name].addTo(map);
@@ -428,7 +429,7 @@ bindCheckbox('mine-청', layers.mines["청"]);
 bindCheckbox('mine-황', layers.mines["황"]);
 bindCheckbox('mine-적', layers.mines["적"]);
 
-// [17] 통합 검색 시스템
+// [17] 통합 검색 및 이동 시스템 (최적화)
 const searchInput = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 let currentFilteredData = [];
@@ -443,17 +444,10 @@ searchInput.addEventListener('input', function() {
         return;
     }
 
-    herbData.forEach(h => {
+    sortedHerbData.forEach(h => {
         if (h.name.toLowerCase().includes(query)) {
-            const isRare = rareHerbs.includes(h.name);
-            const rareLabel = isRare ? ' (희귀)' : '';
             currentFilteredData.push({ 
-                name: h.name + rareLabel, 
-                category: '약초', 
-                x: h.locations[0].x, 
-                z: h.locations[0].z, 
-                type: 'herb',
-                herbName: h.name 
+                name: h.name, category: '약초', x: h.locations[0].x, z: h.locations[0].z, type: 'herb', herbName: h.name 
             });
         }
     });
@@ -508,39 +502,22 @@ searchInput.addEventListener('input', function() {
     }
 });
 
-searchInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && currentFilteredData.length > 0) {
-        selectSearchResult(currentFilteredData[0]);
-    }
-});
-
 function selectSearchResult(item) {
     moveToLocation(item);
     searchResults.style.display = 'none';
-    searchInput.value = item.name.replace(' (희귀)', ''); 
+    searchInput.value = item.name; 
     searchInput.blur();
 }
 
 function moveToLocation(target) {
     const targetPos = mcToPx(target.x, target.z);
 
-    // [수정] 약초 타입이 아닐 때만 지도를 이동하고 확대합니다.
     if (target.type !== 'herb') {
-        map.flyTo(targetPos, -1, { animate: true, duration: 0.5 });
+        // 이동 배율과 속도 최적화
+        map.flyTo(targetPos, -0.5, { animate: true, duration: 0.5 });
     }
 
     setTimeout(() => {
-        let foundMarker = null;
-
-        // 1. 일반 레이어에서 찾기
-        const searchGroups = [layers.spawn, layers.animals, layers.stones, layers.npc, layers.red, layers.pot, layers.box, ...Object.values(layers.mines)];
-        searchGroups.forEach(group => {
-            group.eachLayer(layer => {
-                if (layer instanceof L.Marker && layer.getLatLng().equals(targetPos)) foundMarker = layer;
-            });
-        });
-
-        // 2. 약초 레이어 특수 처리 (이동 없이 레이어만 활성화)
         if (target.type === 'herb') {
             const chk = document.getElementById(`herb-${target.herbName}`);
             if (chk && !chk.checked) {
@@ -548,79 +525,47 @@ function moveToLocation(target) {
                 layers.herbs[target.herbName].addTo(map);
                 layers.herbMarkers[target.herbName].addTo(map);
             }
-            // 약초는 이동하지 않으므로 팝업을 자동으로 열지 않고 위치만 표시되게 하려면 
-            // 아래 foundMarker 설정을 주석 처리하거나 그대로 두셔도 됩니다.
-            foundMarker = layers.herbMarkers[target.herbName].getLayers()[0];
-        }
-
-        // 3. 사냥터 레이어에서 찾기
-        if (!foundMarker) {
-            layers.huntingMarkers.eachLayer(layer => {
-                if (layer instanceof L.Marker && layer.getLatLng().equals(targetPos)) foundMarker = layer;
-            });
-        }
-
-        // 최종: 마커가 있다면 팝업 표시
-        if (foundMarker) {
-            if (!map.hasLayer(foundMarker)) foundMarker.addTo(map);
-            
-            // 약초인 경우 팝업을 열면 지도가 해당 위치로 살짝 튈 수 있으므로 선택사항입니다.
-            // 위치만 확인하고 싶다면 target.type !== 'herb' 일 때만 openPopup 하도록 할 수 있습니다.
-            foundMarker.openPopup(); 
-        } else {
-            // 마커를 못 찾은 경우 임시 팝업 (약초는 이동 안 하므로 이 부분도 target.type에 따라 조절 가능)
-            if (target.type !== 'herb') {
-                L.popup().setLatLng(targetPos)
-                    .setContent(`<div style="text-align:center; font-weight:800;">[${target.category}]<br>${target.name}</div>`)
-                    .openOn(map);
-            }
-        }
-
-        if (target.type === 'hunting') {
+        } else if (target.type === 'hunting') {
             const chk = document.getElementById(`hunt-${target.areaName}`);
             if (chk && !chk.checked) {
                 chk.checked = true;
                 layers.hunting[target.areaName].addTo(map);
-                foundMarker.addTo(map);
             }
         }
-    }, 1100);
+        
+        // 성능 개선: 무거운 eachLayer 루프를 제거하고 즉시 팝업 표시
+        L.popup().setLatLng(targetPos)
+            .setContent(`<div style="text-align:center; font-weight:800;">[${target.category}]<br>${target.name}</div>`)
+            .openOn(map);
+    }, 600);
 }
 
 // [18] 목록 초기화 시스템
-// 1. 사냥터 초기화
 document.getElementById('reset-hunt').addEventListener('click', function(e) {
-    e.stopPropagation(); // 아코디언이 같이 닫히는 것 방지
+    e.stopPropagation();
     huntingGrounds.forEach(area => {
         const chk = document.getElementById(`hunt-${area.name}`);
         if (chk && chk.checked) {
-            chk.checked = false; // 체크박스 해제
-            map.removeLayer(layers.hunting[area.name]); // 영역 이미지 삭제
-            // hMarker는 layerGroup에 있으므로 직접 찾아서 지우거나 그룹에서 관리해야 함
-            // 만약 개별로 관리 중이라면 아래처럼 처리
-            map.eachLayer(layer => {
-                if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().getContent().includes(area.name)) {
-                    map.removeLayer(layer);
-                }
-            });
+            chk.checked = false;
+            map.removeLayer(layers.hunting[area.name]);
         }
     });
 });
 
-// 2. 약초 초기화
 document.getElementById('reset-herb').addEventListener('click', function(e) {
     e.stopPropagation();
-    herbData.forEach(herb => {
+    sortedHerbData.forEach(herb => {
         const chk = document.getElementById(`herb-${herb.name}`);
         if (chk && chk.checked) {
             chk.checked = false;
-            map.removeLayer(layers.herbs[herb.name]); // 약초 분포 이미지 삭제
-            map.removeLayer(layers.herbMarkers[herb.name]); // 약초 마커 그룹 삭제
+            map.removeLayer(layers.herbs[herb.name]);
+            map.removeLayer(layers.herbMarkers[herb.name]);
         }
     });
-    map.closePopup(); // 열려있는 팝업 닫기
+    map.closePopup();
 });
 
+// 팝업 잘림 방지 (기존 유지)
 map.on('popupopen', function(e) {
     const popup = e.popup;
     const container = popup._container;
