@@ -481,12 +481,18 @@ function moveToLocation(target) {
     }, 1100);
 }
 
-// [17] 약초 시스템 (멀티 마커 지원)
-const herbListContainer = document.getElementById('herb-accordion-content'); // HTML에 이 ID의 div를 만드세요!
+// [17] 약초 시스템 (희귀 표시 및 멀티 마커 지원)
+const herbListContainer = document.getElementById('herb-accordion-content');
 layers.herbs = {};
 layers.herbMarkers = {};
 
+// 희귀 약초 리스트
+const rareHerbs = ["홍련업화", "철목영지", "금향과", "월계엽", "빙백설화"];
+
 herbData.forEach((herb) => {
+    const isRare = rareHerbs.includes(herb.name);
+    const rareTag = isRare ? '<span style="color: #ff0000; font-weight: bold; margin-left: 5px;">(희귀)</span>' : '';
+
     // 1. 분포도 이미지 (투명 PNG)
     const overlay = L.imageOverlay(`images/${herb.file}`, huntingImageBounds, {
         opacity: 0.6, interactive: false 
@@ -500,38 +506,51 @@ herbData.forEach((herb) => {
         const hMarker = L.marker(pos, { icon: transparentIcon });
         
         const popupContent = `
-            <div style="text-align:center; min-width:180px;">
-                <div style="font-size:16px; font-weight:800; border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:8px;">${herb.name}</div>
-                <div style="background:#333; color:#FFD700; border-radius:4px; padding:5px; cursor:pointer;" onclick="copyCoords(${loc.x}, 0, ${loc.z})">
-                    ${loc.x}, ${loc.z} (클릭 복사)
+            <div style="text-align:center; min-width:180px; color:#000;">
+                <div style="font-size:16px; font-weight:800; border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:8px;">
+                    ${herb.name}${rareTag}
+                </div>
+                <div style="background:#333; color:#FFD700; border-radius:4px; padding:6px; cursor:pointer; font-size:14px; font-weight:700;" onclick="copyCoords(${loc.x}, 0, ${loc.z})">
+                    ${loc.x}, ${loc.z}
+                    <div style="color:#aaa; font-size:10px; font-weight:normal; margin-top:2px;">(클릭하여 좌표 복사)</div>
                 </div>
             </div>
         `;
-        hMarker.bindPopup(popupContent);
+        hMarker.bindPopup(popupContent, { closeButton: false, offset: L.point(0, -10) });
         markerGroup.addLayer(hMarker);
     });
     layers.herbMarkers[herb.name] = markerGroup;
 
-    // 3. 목록 생성
+    // 3. UI 목록 생성 (메뉴 리스트)
     const label = document.createElement('label');
     label.className = 'control-item';
+    label.style.display = 'flex';
+    label.style.alignItems = 'center';
     label.innerHTML = `
         <input type="checkbox" id="herb-${herb.name}"> 
-        <span style="flex:1;">${herb.name}</span>
+        <span style="flex:1; margin-left:8px;">${herb.name}${rareTag}</span>
     `;
     if(herbListContainer) herbListContainer.appendChild(label);
 
-    // 4. 체크박스 이벤트 (이미지 + 모든 마커 켜기/끄기)
+    // 4. 체크박스 이벤트
     document.getElementById(`herb-${herb.name}`).addEventListener('change', function(e) {
         if(e.target.checked) {
             layers.herbs[herb.name].addTo(map);
             layers.herbMarkers[herb.name].addTo(map);
-            // 첫 번째 좌표로 이동 (서비스!)
+            
+            // 첫 번째 좌표로 부드럽게 이동 및 확대
             const firstPos = mcToPx(herb.locations[0].x, herb.locations[0].z);
-            map.flyTo(firstPos, 4);
+            map.flyTo(firstPos, 4, { animate: true, duration: 1.0 });
+            
+            // 이동 후 첫 번째 마커의 팝업을 자동으로 열어줌
+            setTimeout(() => {
+                const firstMarker = layers.herbMarkers[herb.name].getLayers()[0];
+                if(firstMarker) firstMarker.openPopup();
+            }, 600);
         } else {
             map.removeLayer(layers.herbs[herb.name]);
             map.removeLayer(layers.herbMarkers[herb.name]);
+            map.closePopup();
         }
     });
 });
