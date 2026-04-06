@@ -261,7 +261,7 @@ mysteryBoxes.forEach((box) => {
 npcData.forEach((npc) => {
     const pos = mcToPx(npc.x, npc.z);
     
-    // 탐령구, 정적주는 32x32 사이즈로, 일반 NPC는 40x40 사이즈로 아이콘 생성
+    // [기존유지] 아이콘 설정
     const isSpecial = (npc.name === "탐령구" || npc.name === "정적주");
     let currentIcon;
 
@@ -278,7 +278,7 @@ npcData.forEach((npc) => {
 
     const marker = L.marker(pos, { icon: currentIcon }).addTo(layers.npc);
 
-    // 1. 기록서 위치 복사 버튼 (해무사승려 등 전용)
+    // 1. [기존유지] 기록서 위치 복사 버튼
     let recordsHtml = '';
     if (npc.records && npc.records.length > 0) {
         recordsHtml = `
@@ -296,7 +296,7 @@ npcData.forEach((npc) => {
         `;
     }
 
-    // 2. 동영상 가이드 (해무사승려 전용 mp4 버전)
+    // 2. [기존유지] 동영상 가이드 (해무사승려)
     let videoHtml = '';
     if (npc.name === "해무사승려") {
         videoHtml = `
@@ -310,31 +310,43 @@ npcData.forEach((npc) => {
         `;
     }
 
-    // 3. 기타 정보들 정의
+    // 3. [신규/심화] 모든 상세 정보 항목 정의
     const lvInfo = npc.lv ? `<span style="font-size:12px; color:#666; font-weight:normal;"> (lv.${npc.lv})</span>` : '';
-    const questInfo = npc.quest ? `<div style="margin-bottom:4px;"><span style="color:#d00; font-weight:800;">[퀘스트]</span> ${npc.quest}</div>` : '';
-    const itemInfo = npc.item ? `<div style="margin-bottom:4px;"><span style="color:#007bff; font-weight:800;">[필요아이템]</span> ${npc.item}</div>` : '';
     
-    // 탐령구/정적주용 제작 재료 정보
-    const materialInfo = npc.materials ? `
+    // 데이터가 있을 때만 한 줄씩 생성
+    const questPart = npc.quest ? `<div style="margin-bottom:4px;"><span style="color:#d00; font-weight:800;">[퀘스트]</span> ${npc.quest}</div>` : '';
+    const itemPart = npc.item ? `<div style="margin-bottom:4px;"><span style="color:#007bff; font-weight:800;">[필요재료]</span> ${npc.item}</div>` : '';
+    const routePart = npc.route ? `<div style="margin-bottom:4px;"><span style="color:#28a745; font-weight:800;">[동선]</span> ${npc.route}</div>` : '';
+    const rewardPart = npc.reward ? `<div style="margin-bottom:4px;"><span style="color:#f39c12; font-weight:800;">[보상]</span> ${npc.reward}</div>` : '';
+    
+    // 탐령구/정적주용 제작 재료
+    const materialPart = npc.materials ? `
         <div style="margin-top:8px; padding:8px; background:#f4faff; border:1px solid #cce5ff; border-radius:4px; font-size:12px; color:#004085;">
             <span style="font-weight:800;">[제작재료]</span><br>${npc.materials}
         </div>` : '';
 
-    // 4. 최종 팝업 내용 구성
+    // 메모 정보 (줄 구분선 추가)
+    const memoPart = npc.memo ? `<div style="margin-top:6px; border-top:1px dashed #ccc; padding-top:6px; color:#666; font-size:11px;">※ ${npc.memo}</div>` : '';
+
+    // 4. [기존유지/확장] 최종 팝업 내용 구성
     const popupContent = `
         <div style="text-align:center; min-width:240px; color:#000; padding: 0; line-height: 1.4;">
             <div style="font-size:18px; font-weight:800; border-bottom:2px solid #000; padding: 5px 0; margin-bottom: 10px;">
                 ${npc.name}${lvInfo}
             </div>
+            
             <div style="background:#333; border-radius:4px; padding: 6px 0; margin-bottom: 10px; cursor:pointer;" onclick="copyCoords(${npc.x}, ${npc.y}, ${npc.z})">
                 <div style="color:#FFD700; font-size:15px; font-weight:700;">${npc.x}, ${npc.y}, ${npc.z}</div>
                 <div style="color:#aaa; font-size:9px;">(위치 복사)</div>
             </div>
+
             <div style="text-align:left; font-size:12px; color:#333;">
-                ${questInfo}
-                ${itemInfo}
-                ${materialInfo}
+                ${questPart}
+                ${itemPart}
+                ${materialPart}
+                ${routePart}
+                ${rewardPart}
+                ${memoPart}
                 ${recordsHtml}
                 ${videoHtml}
             </div>
