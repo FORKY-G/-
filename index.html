@@ -119,6 +119,56 @@
         .mine-marker { border: 1px solid #000; border-radius: 2px; }
         .mine-녹 { background-color: #2ecc71; } .mine-황 { background-color: #f1c40f; } .mine-청 { background-color: #3498db; } .mine-적 { background-color: #e74c3c; }
         .special-mine { border: 2.5px solid #ffffff !important; box-shadow: 0 0 8px #fff, 0 0 12px #ff0000 !important; z-index: 1000 !important; }
+    
+    /* 팝업 배경 (어둡게) */
+.modal-overlay {
+    display: flex;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999; /* 지도보다 위에 떠야 함 */
+    justify-content: center;
+    align-items: center;
+}
+
+/* 팝업 박스 */
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    font-size: 18px;
+    font-weight: 800;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.modal-footer {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.modal-footer button {
+    padding: 8px 20px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+    
     </style>
 </head>
     
