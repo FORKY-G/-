@@ -737,19 +737,6 @@ document.getElementById('reset-herb').addEventListener('click', function(e) {
     map.closePopup();
 });
 
-// [19] 공지사항 팝업 닫기 함수
-function closeNotice() {
-    const modal = document.getElementById('notice-modal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// (선택사항) 배경 클릭 시에도 닫히게 하고 싶다면
-document.getElementById('notice-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeNotice();
-});
-
 // 팝업 잘림 방지 (기존 유지)
 map.on('popupopen', function(e) {
     const popup = e.popup;
