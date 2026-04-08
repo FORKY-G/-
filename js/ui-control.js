@@ -696,47 +696,62 @@ L.popup().setLatLng(targetPos)
 
 // [18] 목록 초기화 시스템
 document.getElementById('reset-hunt').addEventListener('click', function(e) {
-e.stopPropagation();
-huntingGrounds.forEach(area => {
-const chk = document.getElementById(`hunt-${area.name}`);
-if (chk && chk.checked) {
-chk.checked = false;
-map.removeLayer(layers.hunting[area.name]);
-// 해당 영역의 마커도 지도에서 제거
-map.eachLayer(layer => {
-if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().getContent().includes(area.name)) {
-map.removeLayer(layer);
-}
+    e.stopPropagation();
+    huntingGrounds.forEach(area => {
+        const chk = document.getElementById(`hunt-${area.name}`);
+        if (chk && chk.checked) {
+            chk.checked = false;
+            map.removeLayer(layers.hunting[area.name]);
+        }
+    });
+});
+
+// [18] 목록 초기화 시스템
+document.getElementById('reset-hunt').addEventListener('click', function(e) {
+    e.stopPropagation();
+    huntingGrounds.forEach(area => {
+        const chk = document.getElementById(`hunt-${area.name}`);
+        if (chk && chk.checked) {
+            chk.checked = false;
+            map.removeLayer(layers.hunting[area.name]);
+            // 해당 영역의 마커도 지도에서 제거
+            map.eachLayer(layer => {
+                if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().getContent().includes(area.name)) {
+                    map.removeLayer(layer);
+                }
+            });
+        }
+    });
 });
 
 document.getElementById('reset-herb').addEventListener('click', function(e) {
-e.stopPropagation();
-sortedHerbData.forEach(herb => {
-const chk = document.getElementById(`herb-${herb.name}`);
-if (chk && chk.checked) {
-chk.checked = false;
-map.removeLayer(layers.herbs[herb.name]);
-map.removeLayer(layers.herbMarkers[herb.name]);
-}
-});
-map.closePopup();
+    e.stopPropagation();
+    sortedHerbData.forEach(herb => {
+        const chk = document.getElementById(`herb-${herb.name}`);
+        if (chk && chk.checked) {
+            chk.checked = false;
+            map.removeLayer(layers.herbs[herb.name]);
+            map.removeLayer(layers.herbMarkers[herb.name]);
+        }
+    });
+    map.closePopup();
 });
 
 // 팝업 잘림 방지 (기존 유지)
 map.on('popupopen', function(e) {
-const popup = e.popup;
-const container = popup._container;
-const rect = container.getBoundingClientRect();
-const mapRect = document.getElementById('map').getBoundingClientRect();
-if (rect.top < mapRect.top + 60) {
-container.style.transform += " translateY(" + (rect.height + 40) + "px)";
-const tip = container.querySelector('.leaflet-popup-tip-container');
-if (tip) tip.style.display = 'none';
-}
-if (rect.left < mapRect.left + 20) {
-container.style.transform += " translateX(" + (rect.width / 2 + 10) + "px)";
-}
-if (rect.right > mapRect.right - 20) {
-container.style.transform += " translateX(-" + (rect.width / 2 + 10) + "px)";
-}
+    const popup = e.popup;
+    const container = popup._container;
+    const rect = container.getBoundingClientRect();
+    const mapRect = document.getElementById('map').getBoundingClientRect();
+    if (rect.top < mapRect.top + 60) {
+        container.style.transform += " translateY(" + (rect.height + 40) + "px)";
+        const tip = container.querySelector('.leaflet-popup-tip-container');
+        if (tip) tip.style.display = 'none';
+    }
+    if (rect.left < mapRect.left + 20) {
+        container.style.transform += " translateX(" + (rect.width / 2 + 10) + "px)";
+    }
+    if (rect.right > mapRect.right - 20) {
+        container.style.transform += " translateX(-" + (rect.width / 2 + 10) + "px)";
+    }
 });
