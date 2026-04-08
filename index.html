@@ -278,6 +278,19 @@
             }
         }
 
+        // [신규] 공지사항 닫기 함수
+function closeNotice() {
+    const modal = document.getElementById('notice-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// 팝업 배경 클릭 시에도 닫히게 하려면 추가
+document.getElementById('notice-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeNotice();
+});
+
         bindAccordion('hunt-accordion-btn', 'hunt-accordion-content');
         bindAccordion('herb-accordion-btn', 'herb-accordion-content');
     </script>
