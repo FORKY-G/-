@@ -257,33 +257,37 @@ padding: 12px;
 const sidebar = document.getElementById('controls');
 const toggleBtn = document.getElementById('toggle-sidebar');
 const searchResultsDiv = document.getElementById('search-results');
+const modal = document.getElementById('notice-modal');
 
-// [1] 공지사항 닫기 함수 (이게 없으면 에러가 나서 아래 코드가 안 돌아갑니다)
+// [1] 공지사항 관련 함수
 function closeNotice() {
-    const modal = document.getElementById('notice-modal');
+    const checkbox = document.getElementById('stop-showing');
     if (modal) {
+        if (checkbox && checkbox.checked) {
+            localStorage.setItem('hideNotice', 'true');
+        }
         modal.style.display = 'none';
     }
 }
 
-// [2] 사이드바 토글 함수
-function toggleSidebar() {
-    if (!sidebar) return;
-    sidebar.classList.toggle('active');
-    toggleBtn.innerText = sidebar.classList.contains('active') ? '▲ 한월메뉴 닫기' : '▼ 한월메뉴 열기';
-}
+// [2] 페이지 로드 시 '다시 보지 않기' 확인
+window.addEventListener('load', function() {
+    const isHidden = localStorage.getItem('hideNotice');
+    if (modal) {
+        if (isHidden === 'true') {
+            modal.style.display = 'none';
+        } else {
+            modal.style.display = 'flex';
+        }
+    }
+});
 
-// [3] 버튼 클릭 이벤트
-if (toggleBtn) {
-    toggleBtn.addEventListener('click', (e) => { 
-        e.stopPropagation(); 
-        toggleSidebar(); 
-    });
-}
-
-// [4] 지도 클릭 시 처리
+// [3] 지도 클릭 이벤트 (팝업 보호막 및 사이드바 제어)
 if (typeof map !== 'undefined') {
     map.on('click', () => {
+        // 공지사항 팝업이 켜져 있다면 모든 클릭 이벤트 중단
+        if (modal && modal.style.display !== 'none') return;
+
         if (sidebar && sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
             toggleBtn.innerText = '▼ 한월메뉴 열기';
@@ -292,22 +296,29 @@ if (typeof map !== 'undefined') {
     });
 }
 
+// [4] 사이드바 및 아코디언 로직
+function toggleSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.toggle('active');
+    toggleBtn.innerText = sidebar.classList.contains('active') ? '▲ 한월메뉴 닫기' : '▼ 한월메뉴 열기';
+}
+
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSidebar(); });
+}
 if (sidebar) sidebar.addEventListener('click', (e) => e.stopPropagation());
 
-// [5] 아코디언 바인딩
 function bindAccordion(btnId, contentId) {
     const btn = document.getElementById(btnId);
     const content = document.getElementById(contentId);
     if (btn && content) {
         btn.addEventListener('click', function() {
             content.classList.toggle('active');
-            const span = this.querySelector('span');
-            if (span) span.innerText = content.classList.contains('active') ? '▲' : '▼';
+            const icon = this.querySelector('span');
+            if (icon) icon.innerText = content.classList.contains('active') ? '▲' : '▼';
         });
     }
 }
-
-// [6] 실행
 bindAccordion('hunt-accordion-btn', 'hunt-accordion-content');
 bindAccordion('herb-accordion-btn', 'herb-accordion-content');
 </script>
