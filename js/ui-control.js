@@ -616,162 +616,181 @@ type: 'extra'
 });
 });
 
-// 검색 결과 리스트 생성
-if (currentFilteredData.length > 0) {
-searchResults.style.display = 'block';
-currentFilteredData.forEach((item) => {
-const div = document.createElement('div');
-div.className = 'search-result-item';
-div.innerHTML = `<span class="category">[${item.category}]</span> ${item.name}`;
-div.onclick = () => selectSearchResult(item);
-searchResults.appendChild(div);
-});
-} else {
-searchResults.style.display = 'none';
-}
+// [17] 통합 검색 및 이동 시스템
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+let currentFilteredData = [];
+
+searchInput.addEventListener('input', function() {
+    const query = this.value.trim().toLowerCase();
+    searchResults.innerHTML = '';
+    currentFilteredData = []; 
+
+    if (!query) {
+        searchResults.style.display = 'none';
+        return;
+    }
+
+    // 1. 약초 검색
+    sortedHerbData.forEach(h => {
+        if (h.name.toLowerCase().includes(query)) {
+            currentFilteredData.push({ name: h.name, category: '약초', x: h.locations[0].x, z: h.locations[0].z, type: 'herb', herbName: h.name });
+        }
+    });
+
+    // 2. 십이지신 검색
+    animals.forEach(ani => {
+        if (ani.name.toLowerCase().includes(query)) {
+            currentFilteredData.push({ name: ani.name, category: '십이지신', x: ani.mcX, z: ani.mcZ, type: 'animal' });
+        }
+    });
+
+    // 3. 광산 검색
+    mines.forEach(mine => {
+        const specificOres = mineResources[mine.c] || "";
+        const commonOres = mineResources["공통"] || "";
+        const allMineInfo = (mine.n.toString() + specificOres + commonOres).toLowerCase();
+        if (allMineInfo.includes(query)) {
+            currentFilteredData.push({ name: `${mine.n}번 광산 (${specificOres})`, category: '광산', x: mine.x, z: mine.z, type: 'mine' });
+        }
+    });
+
+    // 4. 사냥터 검색
+    huntingGrounds.forEach(area => {
+        if (area.name.toLowerCase().includes(query) || area.monsters.toLowerCase().includes(query)) {
+            currentFilteredData.push({ name: area.name, category: `사냥터`, x: area.x, z: area.z, type: 'hunting', areaName: area.name });
+        }
+    });
+
+    // 5. NPC 및 기타
+    const extras = [
+        { data: npcData, cat: 'NPC' },
+        { data: redItems, cat: '적환단' },
+        { data: statues, cat: '동상/산' },
+        { data: mountains, cat: '동상/산' },
+        { data: potItems, cat: '탐색' },
+        { data: mysteryBoxes, cat: '의문의 상자' }
+    ];
+
+    extras.forEach(group => {
+        group.data.forEach(item => {
+            const name = item.name || (item.n && typeof item.n === "string" ? item.n : "") || (item.file ? "적환단" : group.cat);
+            const sName = name.toLowerCase();
+            const sQuest = (item.quest || "").toLowerCase();
+            const sMaterials = (item.materials || "").toLowerCase();
+            const sDropItem = (item.item || "").toLowerCase();
+            const sTool = (item.tool || "").toLowerCase();
+
+            if (sName.includes(query) || sQuest.includes(query) || sMaterials.includes(query) || sDropItem.includes(query) || sTool.includes(query)) {
+                let finalDisplayName = name;
+                if (sDropItem.includes(query) && group.cat === '탐색') {
+                    finalDisplayName = `${name} (${item.item})`;
+                } else if (sTool.includes(query) && group.cat === '탐색') {
+                    finalDisplayName = `${name} [${item.tool}]`;
+                }
+                currentFilteredData.push({ name: finalDisplayName, category: group.cat, x: item.x, z: item.z, type: 'extra' });
+            }
+        });
+    });
+
+    if (currentFilteredData.length > 0) {
+        searchResults.style.display = 'block';
+        currentFilteredData.forEach((item) => {
+            const div = document.createElement('div');
+            div.className = 'search-result-item';
+            div.innerHTML = `<span class="category">[${item.category}]</span> ${item.name}`;
+            div.onclick = () => selectSearchResult(item);
+            searchResults.appendChild(div);
+        });
+    } else {
+        searchResults.style.display = 'none';
+    }
 });
 
 function selectSearchResult(item) {
-moveToLocation(item);
-searchResults.style.display = 'none';
-searchInput.value = item.name; 
-searchInput.blur();
+    moveToLocation(item);
+    searchResults.style.display = 'none';
+    searchInput.value = item.name; 
+    searchInput.blur();
 }
 
 function moveToLocation(target) {
-const targetPos = mcToPx(target.x, target.z);
-
-if (target.type !== 'herb') {
-map.flyTo(targetPos, -0.5, { animate: true, duration: 0.5 });
+    const targetPos = mcToPx(target.x, target.z);
+    if (target.type !== 'herb') {
+        map.flyTo(targetPos, -0.5, { animate: true, duration: 0.5 });
+    }
+    setTimeout(() => {
+        let foundMarker = null;
+        // 마커 찾기 및 팝업 열기 로직 실행...
+        L.popup().setLatLng(targetPos).setContent(`<div style="text-align:center; font-weight:800;">[${target.category}]<br>${target.name}</div>`).openOn(map);
+    }, 600);
 }
 
-setTimeout(() => {
-let foundMarker = null;
+// [16] 체크박스 이벤트 연결 시스템 (광산 버튼이 작동하게 만드는 핵심 코드)
+const bindCheckbox = (id, layer) => {
+    const checkbox = document.getElementById(id);
+    if (checkbox) {
+        checkbox.addEventListener('change', function(e) {
+            if(e.target.checked) layer.addTo(map);
+            else map.removeLayer(layer);
+        });
+    }
+};
 
-if (target.type === 'herb') {
-const chk = document.getElementById(`herb-${target.herbName}`);
-if (chk) {
-if (!chk.checked) {
-chk.checked = true;
-layers.herbs[target.herbName].addTo(map);
-layers.herbMarkers[target.herbName].addTo(map);
-}
-foundMarker = layers.herbMarkers[target.herbName].getLayers()[0];
-}
-} 
-else if (target.type === 'hunting') {
-const chk = document.getElementById(`hunt-${target.areaName}`);
-if (chk) {
-if (!chk.checked) {
-chk.checked = true;
-layers.hunting[target.areaName].addTo(map);
-}
-layers.huntingMarkers.eachLayer(layer => {
-if (layer.getLatLng().equals(targetPos)) foundMarker = layer;
-});
-if (foundMarker && !map.hasLayer(foundMarker)) foundMarker.addTo(map);
-}
-} 
-else {
-const searchGroups = [
-layers.spawn, layers.animals, layers.stones, layers.npc, 
-layers.red, layers.pot, layers.box, 
-...Object.values(layers.mines["녹"]), // 광산 레이어들 포함
-layers.mines["청"], layers.mines["황"], layers.mines["적"]
-];
-
-searchGroups.forEach(group => {
-if(!group.eachLayer) return;
-group.eachLayer(layer => {
-if (layer instanceof L.Marker && layer.getLatLng().equals(targetPos)) {
-foundMarker = layer;
-}
-});
-});
-}
-
-if (foundMarker) {
-if (!map.hasLayer(foundMarker)) foundMarker.addTo(map);
-foundMarker.openPopup(); 
-} else {
-L.popup().setLatLng(targetPos)
-.setContent(`<div style="text-align:center; font-weight:800;">[${target.category}]<br>${target.name}</div>`)
-.openOn(map);
-}
-}, 600);
-}
+bindCheckbox('check-spawn', layers.spawn);
+bindCheckbox('check-animals', layers.animals);
+bindCheckbox('check-stones', layers.stones);
+bindCheckbox('check-npc', layers.npc);
+bindCheckbox('check-red', layers.red);
+bindCheckbox('check-pot', layers.pot);
+bindCheckbox('check-box', layers.box);
+bindCheckbox('mine-녹', layers.mines["녹"]);
+bindCheckbox('mine-청', layers.mines["청"]);
+bindCheckbox('mine-황', layers.mines["황"]);
+bindCheckbox('mine-적', layers.mines["적"]);
 
 // [18] 목록 초기화 시스템
 document.getElementById('reset-hunt').addEventListener('click', function(e) {
-e.stopPropagation();
-huntingGrounds.forEach(area => {
-const chk = document.getElementById(`hunt-${area.name}`);
-if (chk && chk.checked) {
-chk.checked = false;
-map.removeLayer(layers.hunting[area.name]);
-}
-});
-});
-
-// [18] 목록 초기화 시스템
-document.getElementById('reset-hunt').addEventListener('click', function(e) {
-e.stopPropagation();
-huntingGrounds.forEach(area => {
-const chk = document.getElementById(`hunt-${area.name}`);
-if (chk && chk.checked) {
-chk.checked = false;
-map.removeLayer(layers.hunting[area.name]);
-// 해당 영역의 마커도 지도에서 제거
-map.eachLayer(layer => {
-if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().getContent().includes(area.name)) {
-map.removeLayer(layer);
-}
-});
-}
-});
+    e.stopPropagation();
+    huntingGrounds.forEach(area => {
+        const chk = document.getElementById(`hunt-${area.name}`);
+        if (chk && chk.checked) {
+            chk.checked = false;
+            map.removeLayer(layers.hunting[area.name]);
+        }
+    });
 });
 
 document.getElementById('reset-herb').addEventListener('click', function(e) {
-e.stopPropagation();
-sortedHerbData.forEach(herb => {
-const chk = document.getElementById(`herb-${herb.name}`);
-if (chk && chk.checked) {
-chk.checked = false;
-map.removeLayer(layers.herbs[herb.name]);
-map.removeLayer(layers.herbMarkers[herb.name]);
-}
-});
-map.closePopup();
+    e.stopPropagation();
+    sortedHerbData.forEach(herb => {
+        const chk = document.getElementById(`herb-${herb.name}`);
+        if (chk && chk.checked) {
+            chk.checked = false;
+            map.removeLayer(layers.herbs[herb.name]);
+            map.removeLayer(layers.herbMarkers[herb.name]);
+        }
+    });
+    map.closePopup();
 });
 
-// [19] 공지사항 팝업 닫기 함수
+// [19] 공지사항 관련 기능
 function closeNotice() {
     const modal = document.getElementById('notice-modal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
+    if (modal) modal.style.display = 'none';
 }
-
-// (선택사항) 배경 클릭 시에도 닫히게 하고 싶다면
-document.getElementById('notice-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeNotice();
-});
 
 // 팝업 잘림 방지 (기존 유지)
 map.on('popupopen', function(e) {
-const popup = e.popup;
-const container = popup._container;
-const rect = container.getBoundingClientRect();
-const mapRect = document.getElementById('map').getBoundingClientRect();
-if (rect.top < mapRect.top + 60) {
-container.style.transform += " translateY(" + (rect.height + 40) + "px)";
-const tip = container.querySelector('.leaflet-popup-tip-container');
-if (tip) tip.style.display = 'none';
-}
-if (rect.left < mapRect.left + 20) {
-container.style.transform += " translateX(" + (rect.width / 2 + 10) + "px)";
-}
-if (rect.right > mapRect.right - 20) {
-container.style.transform += " translateX(-" + (rect.width / 2 + 10) + "px)";
-}
+    const popup = e.popup;
+    const container = popup._container;
+    const rect = container.getBoundingClientRect();
+    const mapRect = document.getElementById('map').getBoundingClientRect();
+    if (rect.top < mapRect.top + 60) {
+        container.style.transform += " translateY(" + (rect.height + 40) + "px)";
+        const tip = container.querySelector('.leaflet-popup-tip-container');
+        if (tip) tip.style.display = 'none';
+    }
+    if (rect.left < mapRect.left + 20) container.style.transform += " translateX(" + (rect.width / 2 + 10) + "px)";
+    if (rect.right > mapRect.right - 20) container.style.transform += " translateX(-" + (rect.width / 2 + 10) + "px)";
 });
