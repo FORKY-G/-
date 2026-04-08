@@ -291,6 +291,27 @@ npcData.forEach((npc) => {
 
     const marker = L.marker(pos, { icon: currentIcon }).addTo(layers.npc);
 
+    let craftHtml = '';
+    if (npc.crafting && npc.crafting.length > 0) {
+        craftHtml = `
+            <div style="margin-top:10px; border-top:2px solid #000; padding-top:10px;">
+                <div style="font-weight:900; font-size:13px; color:#000; margin-bottom:8px; text-align:left;">[제작 아이템 목록]</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background:#333; padding:4px; border:1px solid #000;">
+                    ${npc.crafting.map((item, index) => `
+                        <div onclick="showRecipe('${npc.name}', ${index})" 
+                             style="aspect-ratio: 1/1; background:#1a1a1a; border:1px solid #555; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                             onmouseover="this.style.border='1px solid #ffd700'" 
+                             onmouseout="this.style.border='1px solid #555'">
+                            <img src="images/items/${item.img}" style="width:85%; height:85%; object-fit:contain;" title="${item.name}">
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="recipe-display-${npc.name.replace(/\s+/g, '')}" style="margin-top:8px; padding:10px; background:#eee; border:1px solid #000; font-size:12px; font-weight:700; display:none; color:#000; text-align:left; line-height:1.4;">
+                </div>
+            </div>
+        `;
+    }
+    
     let recordsHtml = '';
     if (npc.records && npc.records.length > 0) {
         recordsHtml = `
@@ -325,15 +346,18 @@ npcData.forEach((npc) => {
             <div style="font-size:18px; font-weight:800; border-bottom:2px solid #000; padding: 5px 0; margin-bottom: 10px;">
                 ${npc.name}${npc.lv ? `<span style="font-size:12px; color:#666; font-weight:normal;"> (lv.${npc.lv})</span>` : ''}
             </div>
+            
             <div style="background:#333; border-radius:4px; padding: 6px 0; margin-bottom: 10px; cursor:pointer;" onclick="copyCoords(${npc.x}, ${npc.y}, ${npc.z})">
                 <div style="color:#FFD700; font-size:15px; font-weight:700;">${npc.x}, ${npc.y}, ${npc.z}</div>
                 <div style="color:#aaa; font-size:9px;">(위치 복사)</div>
             </div>
+
             <div style="text-align:left; font-size:12px; color:#333;">
                 ${npc.quest ? `<div><span style="color:#d00; font-weight:800;">[퀘스트]</span> ${npc.quest}</div>` : ''}
                 ${npc.item ? `<div><span style="color:#007bff; font-weight:800;">[필요재료]</span> ${npc.item}</div>` : ''}
                 ${npc.materials ? `<div style="margin-top:8px; padding:8px; background:#f4faff; border:1px solid #cce5ff; border-radius:4px; color:#004085;"><span style="font-weight:800;">[제작재료]</span><br>${npc.materials}</div>` : ''}
-                ${npc.route ? `<div><span style="color:#28a745; font-weight:800;">[동선]</span> ${npc.route}</div>` : ''}
+                
+                ${craftHtml} ${npc.route ? `<div><span style="color:#28a745; font-weight:800;">[동선]</span> ${npc.route}</div>` : ''}
                 ${npc.reward ? `<div><span style="color:#f39c12; font-weight:800;">[보상]</span> ${npc.reward}</div>` : ''}
                 ${npc.memo ? `<div style="margin-top:6px; border-top:1px dashed #ccc; padding-top:6px; color:#666; font-size:11px;">※ ${npc.memo}</div>` : ''}
                 ${recordsHtml}
@@ -341,6 +365,7 @@ npcData.forEach((npc) => {
             </div>
         </div>
     `;
+
     marker.bindPopup(popupContent, { autoPan: true, keepInView: true, closeButton: false, offset: L.point(0, -5) });
 });
 
@@ -569,3 +594,18 @@ map.on('popupopen', e => {
     const mapRect = document.getElementById('map').getBoundingClientRect();
     if (rect.top < mapRect.top + 60) container.style.transform += " translateY(" + (rect.height + 40) + "px)";
 });
+
+window.showRecipe = function(npcName, index) {
+    const npc = npcData.find(n => n.name === npcName);
+    const displayId = `recipe-display-${npcName.replace(/\s+/g, '')}`;
+    const displayDiv = document.getElementById(displayId);
+    
+    if (npc && npc.crafting && npc.crafting[index] && displayDiv) {
+        const item = npc.crafting[index];
+        displayDiv.style.display = 'block';
+        displayDiv.innerHTML = `
+            <div style="color:#d00; font-weight:900; margin-bottom:5px; border-bottom:1px solid #ccc; padding-bottom:3px;">★ ${item.name}</div>
+            <div style="color:#333; font-size:11px; word-break:keep-all;">${item.materials}</div>
+        `;
+    }
+};
