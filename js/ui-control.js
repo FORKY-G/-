@@ -499,13 +499,13 @@ map.closePopup();
 
 // [16] 체크박스 이벤트 연결 시스템
 const bindCheckbox = (id, layer) => {
-const checkbox = document.getElementById(id);
-if (checkbox) {
-checkbox.addEventListener('change', function(e) {
-if(e.target.checked) layer.addTo(map);
-else map.removeLayer(layer);
-});
-}
+    const checkbox = document.getElementById(id);
+    if (checkbox) {
+        checkbox.addEventListener('change', function(e) {
+            if(e.target.checked) layer.addTo(map);
+            else map.removeLayer(layer);
+        });
+    }
 };
 
 bindCheckbox('check-spawn', layers.spawn);
