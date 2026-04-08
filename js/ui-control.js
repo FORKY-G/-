@@ -76,21 +76,14 @@ color: mineColors[colorKey], weight: 3, opacity: 0, dashArray: '7, 10'
 }).addTo(layers.mines[colorKey]); 
 });
 
-// [4] 좌표 복사 함수 (ui-control.js)
+// [4] 좌표 복사 함수
 window.copyCoords = (x, y, z) => {
-    const text = `${x} ${y} ${z}`; 
-    navigator.clipboard.writeText(text).then(() => {
-        const toast = document.getElementById('copy-toast');
-        toast.innerText = `복사 완료`; // 어떤 좌표인지 표시해주면 더 친절함!
-        toast.style.display = 'block';
-        
-        // 1.5초 뒤에 사라짐
-        setTimeout(() => { 
-            toast.style.display = 'none'; 
-        }, 1500);
-    }).catch(err => {
-        console.error('복사 실패:', err);
-    });
+const text = `${x} ${y} ${z}`; 
+navigator.clipboard.writeText(text).then(() => {
+const toast = document.getElementById('copy-toast');
+toast.style.display = 'block';
+setTimeout(() => { toast.style.display = 'none'; }, 1500);
+});
 };
 
 // [5] 십이지신 마커 생성
@@ -499,13 +492,13 @@ map.closePopup();
 
 // [16] 체크박스 이벤트 연결 시스템
 const bindCheckbox = (id, layer) => {
-    const checkbox = document.getElementById(id);
-    if (checkbox) {
-        checkbox.addEventListener('change', function(e) {
-            if(e.target.checked) layer.addTo(map);
-            else map.removeLayer(layer);
-        });
-    }
+const checkbox = document.getElementById(id);
+if (checkbox) {
+checkbox.addEventListener('change', function(e) {
+if(e.target.checked) layer.addTo(map);
+else map.removeLayer(layer);
+});
+}
 };
 
 bindCheckbox('check-spawn', layers.spawn);
@@ -702,40 +695,59 @@ L.popup().setLatLng(targetPos)
 }
 
 // [18] 목록 초기화 시스템
-// 1. 사냥터 초기화
 document.getElementById('reset-hunt').addEventListener('click', function(e) {
-    e.stopPropagation();
-    huntingGrounds.forEach(area => {
-        const chk = document.getElementById(`hunt-${area.name}`);
-        if (chk && chk.checked) {
-            chk.checked = false;
-            // 맵에서 사냥터 레이어(영역 색상) 제거
-            if (layers.hunting[area.name]) {
-                map.removeLayer(layers.hunting[area.name]);
-            }
-            // 맵에 생성된 해당 사냥터의 마커들만 찾아서 제거
-            map.eachLayer(layer => {
-                if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().getContent().includes(area.name)) {
-                    map.removeLayer(layer);
-                }
-            });
-        }
-    });
+e.stopPropagation();
+huntingGrounds.forEach(area => {
+const chk = document.getElementById(`hunt-${area.name}`);
+if (chk && chk.checked) {
+chk.checked = false;
+map.removeLayer(layers.hunting[area.name]);
+}
+});
 });
 
-// 2. 약초 초기화
+// [18] 목록 초기화 시스템
+document.getElementById('reset-hunt').addEventListener('click', function(e) {
+e.stopPropagation();
+huntingGrounds.forEach(area => {
+const chk = document.getElementById(`hunt-${area.name}`);
+if (chk && chk.checked) {
+chk.checked = false;
+map.removeLayer(layers.hunting[area.name]);
+// 해당 영역의 마커도 지도에서 제거
+map.eachLayer(layer => {
+if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().getContent().includes(area.name)) {
+map.removeLayer(layer);
+}
+});
+}
+});
+});
+
 document.getElementById('reset-herb').addEventListener('click', function(e) {
-    e.stopPropagation();
-    sortedHerbData.forEach(herb => {
-        const chk = document.getElementById(`herb-${herb.name}`);
-        if (chk && chk.checked) {
-            chk.checked = false;
-            // 맵에서 약초 레이어 및 마커 그룹 제거
-            if (layers.herbs[herb.name]) map.removeLayer(layers.herbs[herb.name]);
-            if (layers.herbMarkers[herb.name]) map.removeLayer(layers.herbMarkers[herb.name]);
-        }
-    });
-    map.closePopup(); // 열려있는 약초 팝업 닫기
+e.stopPropagation();
+sortedHerbData.forEach(herb => {
+const chk = document.getElementById(`herb-${herb.name}`);
+if (chk && chk.checked) {
+chk.checked = false;
+map.removeLayer(layers.herbs[herb.name]);
+map.removeLayer(layers.herbMarkers[herb.name]);
+}
+});
+map.closePopup();
+});
+
+// [19] 공지사항 팝업 닫기 함수
+function closeNotice() {
+    const modal = document.getElementById('notice-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// (선택사항) 배경 클릭 시에도 닫히게 하고 싶다면
+document.getElementById('notice-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeNotice();
 });
 
 // 팝업 잘림 방지 (기존 유지)
