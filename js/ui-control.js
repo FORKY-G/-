@@ -302,7 +302,7 @@ npcData.forEach((npc) => {
                              style="aspect-ratio: 1/1; background:#1a1a1a; border:1px solid #555; cursor:pointer; display:flex; align-items:center; justify-content:center;"
                              onmouseover="this.style.border='1px solid #ffd700'" 
                              onmouseout="this.style.border='1px solid #555'">
-                            <img src="images/items/${item.img}" style="width:85%; height:85%; object-fit:contain;" title="${item.name}">
+                            <img src="images/${item.img}" style="width:85%; height:85%; object-fit:contain;" title="${item.name}">
                         </div>
                     `).join('')}
                 </div>
