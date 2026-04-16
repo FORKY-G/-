@@ -851,12 +851,12 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
     partArea.appendChild(fixedSpecBox);
 }
 
-// [20-3] 장신구 전용 렌더러 (2단계: 반지/귀걸이 선택)
+// [20-3] 장신구 전용 렌더러 (반지/귀걸이 큰 카테고리)
 function renderAccessory(level, catData, detailArea) {
     const typeGrid = document.createElement('div');
     typeGrid.style.cssText = 'display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px;';
 
-    for (const type in catData) { // type: "반지", "귀걸이"
+    for (const type in catData) {
         const typeBtn = document.createElement('div');
         typeBtn.style.cssText = `
             background: #fff; border: 2px solid #000; padding: 12px;
@@ -879,7 +879,7 @@ function renderAccessory(level, catData, detailArea) {
     detailArea.appendChild(accessoryMainArea);
 }
 
-// [20-4] 장신구 레벨 선택 (30제, 70제 버튼 생성)
+// [20-4] 장신구 레벨 선택 (30제, 70제 등 버튼)
 function renderAccessoryLevels(typeName, levelsData, targetArea) {
     targetArea.innerHTML = ''; 
 
@@ -908,13 +908,13 @@ function renderAccessoryLevels(typeName, levelsData, targetArea) {
     targetArea.appendChild(itemShowArea);
 }
 
-// [20-5] 최종 장신구 아이템 그리드 (IMG + 이름)
+// [20-5] 최종 장신구 아이템 그리드 (아이콘 + 이름)
 function renderAccessoryItems(lvTitle, items, targetArea) {
     targetArea.innerHTML = '';
     
     const title = document.createElement('div');
     title.style.cssText = 'font-weight:900; background:#eee; padding:5px; margin-top:15px; border-left:4px solid #000; font-size:12px;';
-    title.innerText = `[${lvTitle} 목록]`;
+    title.innerText = `▷ ${lvTitle} 목록`;
     targetArea.appendChild(title);
 
     const itemGrid = document.createElement('div');
@@ -928,8 +928,9 @@ function renderAccessoryItems(lvTitle, items, targetArea) {
             display: flex; flex-direction: column; align-items: center; gap: 5px;
         `;
 
+        // 아이콘 (나중에 png 넣을 자리)
         const iconPlaceholder = document.createElement('div');
-        iconPlaceholder.style.cssText = 'width:35px; height:35px; background:#f9f9f9; border:1px solid #ccc;';
+        iconPlaceholder.style.cssText = 'width:35px; height:35px; background:#f9f9f9; border:1px solid #ccc; display:flex; align-items:center; justify-content:center;';
         iconPlaceholder.innerText = 'IMG';
 
         const nameLabel = document.createElement('div');
@@ -938,17 +939,19 @@ function renderAccessoryItems(lvTitle, items, targetArea) {
         itemBox.appendChild(iconPlaceholder);
         itemBox.appendChild(nameLabel);
 
+        // ★ 핵심: 클릭하면 부위 선택 창 없이 바로 'showPartDetail'을 실행해서 스텟을 보여줌
         itemBox.onclick = function() {
             Array.from(itemGrid.children).forEach(child => child.style.background = '#fff');
             this.style.background = '#f1f1f1';
             
-            // 장신구는 스텟 하나뿐이므로 ["정보"] 대신 ["스텟"] 하나만 전달
+            // parts에 ["스텟"]을 넘기고 isAutoOpen을 true로 설정해서 즉시 노출
             showPartDetail(itemName, items[itemName], ["스텟"], itemGrid, true);
         };
         itemGrid.appendChild(itemBox);
     }
     targetArea.appendChild(itemGrid);
 
+    // 스텟 정보가 고정되어 나타날 영역
     const infoArea = document.createElement('div');
     infoArea.className = 'part-detail-area';
     targetArea.appendChild(infoArea);
