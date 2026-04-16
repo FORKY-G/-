@@ -270,7 +270,7 @@ const skillData = [
     { name: "열화신공", info: "대장장이불 100개 + 5만전" },
     { name: "흑무검법", info: "필드보스(매화곡) - 오공 드랍" },
     { name: "청무검법", info: "필드보스(신선원) - 농장주인 드랍" },
-    { name: "수류검법", info: "탐령구 획득", image: "images/where.jpg" },
+    { name: "수류검법", info: "탐령구 획득(확정아님, 여러번 시도해야 합니다)", image: "images/where.jpg" },
     { name: "초살선풍", info: "기와문양판1 + 무괴철1 + 갈옥15 + 무공정수30 + 3만전" },
     { name: "빙설검법", info: "도우미NPC - 추천포인트 3으로 교환" },
     { name: "혈사검법", info: "필드보스(검성지묘) - 검성 드랍" },
