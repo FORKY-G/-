@@ -957,6 +957,7 @@ function renderAccessoryItems(lvTitle, items, targetArea) {
     targetArea.appendChild(infoArea);
 }
 
+
 // [21] 팝업 관리 및 제작 아이템 표시
 map.on('popupopen', e => {
     const container = e.popup._container;
