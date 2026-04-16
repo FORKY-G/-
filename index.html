@@ -18,7 +18,7 @@
             display: flex; flex-direction: row; align-items: center; gap: 12px;
         }
 
-        /* [비급/대장장이 정보창 스타일] */
+       /* [비급/대장장이 정보창 스타일] */
         #skill-btn { position: fixed; top: 80px; left: 12px; z-index: 1000; cursor: pointer; transition: transform 0.2s; }
         #skill-btn:hover { transform: scale(1.1); }
         #skill-window, #blacksmith-window {
@@ -29,27 +29,26 @@
             z-index: 1000; 
             width: 320px; 
             max-height: 70vh; 
-            background: #1a1512; /* 명인 대장장이 어두운 배경 */
-            border: 3px solid #5e4b3c; /* 금속 테두리 */
+            background: #1e1a17; /* 눈이 편안한 다크 브라운 */
+            border: 2px solid #6d5a4a; /* 차분한 테두리 색상 */
             box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5);
             overflow-y: auto; 
             font-family: 'Pretendard', sans-serif;
-            color: #eee7c5; /* 글자색 베이지 */
+            color: #eee7c5; /* 베이지색 글자 */
         }
 
         /* 스크롤바 디자인 */
         #skill-window::-webkit-scrollbar, #blacksmith-window::-webkit-scrollbar { width: 6px; }
         #skill-window::-webkit-scrollbar-thumb, #blacksmith-window::-webkit-scrollbar-thumb { 
-            background: #5e4b3c; 
-            border-radius: 10px; 
+            background: #5e4b3c; border-radius: 10px; 
         }
         #skill-window::-webkit-scrollbar-track, #blacksmith-window::-webkit-scrollbar-track { background: #1a1512; }
 
-        /* 제목 표시줄 (📜비급, 🔨대장장이) */
+        /* 제목 표시줄 - 노란색 톤다운 */
         #skill-window > div:first-child, #blacksmith-window > div:first-child {
-            background: #2a211a !important; 
-            border-bottom: 2px solid #5e4b3c;
-            color: #ffd700 !important; /* 금색 제목 */
+            background: #2a241f !important; 
+            border-bottom: 2px solid #4a3d33;
+            color: #d4af37 !important; /* 쨍하지 않은 고문서 금색 */
             position: sticky; top: 0; z-index: 10;
         }
 
@@ -62,8 +61,8 @@
             cursor: pointer; transition: all 0.1s;
         }
         .game-item-box:hover, .game-item-box.selected {
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            border-color: #b8860b; /* 차분한 골드 */
+            box-shadow: 0 0 12px rgba(184, 134, 11, 0.4);
         }
 
         /* 아이템 이름 스타일 */
