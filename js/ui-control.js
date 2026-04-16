@@ -664,6 +664,117 @@ if (skillBtn) {
     skillBtn.addEventListener('click', toggleSkillWindow);
 }
 
+
+// 대장장이 정보
+window.renderBlacksmith = function() {
+    const container = document.getElementById('blacksmith-list-content');
+    if (!container) return;
+    container.innerHTML = ''; 
+
+    for (const level in blacksmithData) {
+        const levelGroup = document.createElement('div');
+        levelGroup.style.marginBottom = '10px';
+
+        const header = document.createElement('div');
+        header.className = 'accordion-header';
+        header.innerHTML = `${level} 카테고리 <span>▼</span>`;
+        header.onclick = function() {
+            const content = this.nextElementSibling;
+            content.classList.toggle('active');
+            this.querySelector('span').innerText = content.classList.contains('active') ? '▲' : '▼';
+        };
+
+        const content = document.createElement('div');
+        content.className = 'accordion-content';
+
+        for (const type in blacksmithData[level]) {
+            const typeData = blacksmithData[level][type];
+            
+            // 장신구(반지/귀걸이) 처리
+            if (level === "장신구") {
+                const typeTitle = document.createElement('div');
+                typeTitle.style.cssText = 'font-weight:900; background:#eee; padding:5px; margin-top:10px; border-left:4px solid #333;';
+                typeTitle.innerText = `[${type}]`;
+                content.appendChild(typeTitle);
+
+                for (const subLevel in typeData) {
+                    const subTitle = document.createElement('div');
+                    subTitle.style.cssText = 'font-size:12px; font-weight:800; color:#d00; margin:8px 0 4px 5px;';
+                    subTitle.innerText = `▶ ${subLevel}`;
+                    content.appendChild(subTitle);
+
+                    for (const itemName in typeData[subLevel]) {
+                        content.appendChild(createItemElement(itemName, typeData[subLevel][itemName], ["정보"]));
+                    }
+                }
+            } else {
+                // 일반 장비/무기 처리
+                const typeTitle = document.createElement('div');
+                typeTitle.style.cssText = 'font-weight:900; background:#f4f4f4; padding:5px; margin-top:10px; border-left:4px solid #000;';
+                typeTitle.innerText = `[${type === 'equipment' ? '방어구' : '무기'}]`;
+                
+                const materialInfo = document.createElement('div');
+                materialInfo.style.cssText = 'font-size:11px; color:#666; margin:5px 0 10px 5px; line-height:1.4;';
+                materialInfo.innerHTML = `<b>필요재료:</b> ${typeData.materials}<br><b>주문서 가능 횟수:</b> ${typeData.scrollCount}회`;
+
+                content.appendChild(typeTitle);
+                content.appendChild(materialInfo);
+
+                for (const itemName in typeData.items) {
+                    const parts = (type === 'equipment') ? ["투구", "갑옷", "허리띠", "신발"] : ["무기"];
+                    content.appendChild(createItemElement(itemName, typeData.items[itemName], parts));
+                }
+            }
+        }
+
+        levelGroup.appendChild(header);
+        levelGroup.appendChild(content);
+        container.appendChild(levelGroup);
+    }
+};
+
+// 아이템 개별 요소 생성 함수 (내부용)
+function createItemElement(name, data, parts) {
+    const wrapper = document.createElement('div');
+    
+    const btn = document.createElement('div');
+    btn.style.cssText = 'padding:8px; border-bottom:1px solid #eee; cursor:pointer; font-weight:700; font-size:13px; color:#333;';
+    btn.innerText = `· ${name}`;
+    
+    const detail = document.createElement('div');
+    detail.style.cssText = 'display:none; padding:10px; background:#f9f9f9; border-bottom:1px solid #ddd;';
+
+    btn.onclick = () => detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+
+    parts.forEach(part => {
+        const partRow = document.createElement('div');
+        partRow.style.marginBottom = '12px';
+
+        const icon = document.createElement('div');
+        icon.style.cssText = 'width:42px; height:42px; border:2px solid #000; display:inline-flex; align-items:center; justify-content:center; background:#fff; cursor:pointer; font-size:11px; font-weight:900; box-shadow:2px 2px 0px rgba(0,0,0,0.1);';
+        icon.innerText = part;
+
+        const spec = document.createElement('div');
+        spec.style.cssText = 'font-size:11px; margin-top:6px; display:none; padding-left:5px; line-height:1.5;';
+        
+        const targetData = (part === "무기" || part === "정보") ? data : data[part];
+        if (targetData) {
+            spec.innerHTML = `<div style="color:#e67e22; font-weight:800;">[스텟] ${targetData.스텟}</div>
+                              <div style="color:#7f8c8d;">[일반] ${targetData.일반}</div>`;
+        }
+
+        icon.onclick = () => spec.style.display = spec.style.display === 'block' ? 'none' : 'block';
+
+        partRow.appendChild(icon);
+        partRow.appendChild(spec);
+        detail.appendChild(partRow);
+    });
+
+    wrapper.appendChild(btn);
+    wrapper.appendChild(detail);
+    return wrapper;
+}
+
 // [19] 초기화 기능
 document.getElementById('reset-hunt').addEventListener('click', e => {
     e.stopPropagation();
