@@ -643,16 +643,16 @@ window.renderSkillList = function() {
 
     container.innerHTML = skillData.map(skill => {
         const imageTag = skill.image 
-            ? `<img src="${skill.image}" style="width:100%; border-radius:4px; margin-top:8px; border:1px solid #ddd; display:block;">` 
+            ? `<img src="${skill.image}" style="width:100%; border-radius:4px; margin-top:8px; border:1px solid #5e4b3c; display:block;">` 
             : '';
 
         return `
-            <div style="margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-                <div style="font-weight: 800; color: #d00; font-size: 15px; margin-bottom: 5px; display: flex; align-items: center;">
-                    <span style="background: #d00; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-right: 6px;">SKILL</span>
+            <div style="margin-bottom: 20px; border-bottom: 1px solid #3d3129; padding-bottom: 15px;">
+                <div style="font-weight: 900; color: #ffd700; font-size: 15px; margin-bottom: 8px; display: flex; align-items: center;">
+                    <span style="background: #ffd700; color: #000; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-right: 8px; font-weight:900;">SKILL</span>
                     ${skill.name}
                 </div>
-                <div style="font-size: 12px; color: #333; font-weight: 700; line-height: 1.5; word-break: keep-all; padding-left: 2px;">
+                <div style="font-size: 12px; color: #ddd; font-weight: 700; line-height: 1.6; word-break: keep-all; padding-left: 2px;">
                     ${skill.info}
                 </div>
                 ${imageTag}
