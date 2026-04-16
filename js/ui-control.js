@@ -683,7 +683,7 @@ window.toggleBlacksmithWindow = function() {
     }
 };
 
-// [20] 3단계: 부위별 상세 정보 렌더링 (방어구 부위 PNG 아이콘화 적용)
+// [20] 3단계: 부위별 상세 정보 렌더링 (방어구 부위 PNG 아이콘화 + 스텟 줄바꿈 적용)
 function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
     const partArea = parentGrid.nextElementSibling;
     if (!partArea) return;
@@ -691,7 +691,7 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
     partArea.innerHTML = '';
     partArea.style.cssText = 'margin-top:10px; padding:10px; position: relative;';
 
-    // 스텟 정보가 표시될 박스
+    // 스텟 정보 박스 (차분한 골드 톤)
     const fixedSpecBox = document.createElement('div');
     fixedSpecBox.style.cssText = `
         display: none; font-size: 12px; background: #15110e; padding: 12px; 
@@ -700,7 +700,7 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
         box-sizing: border-box; border-radius: 4px;
     `;
     
-    // 투구, 갑옷 등 아이콘이 나열될 그리드
+    // 투구, 갑옷 등 부위 아이콘 그리드
     const partGrid = document.createElement('div');
     partGrid.style.cssText = `
         display: ${isAutoOpen ? 'none' : 'grid'}; 
@@ -708,23 +708,22 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
     `;
 
     parts.forEach(part => {
-        // 아이콘과 이름을 묶을 컨테이너
         const partContainer = document.createElement('div');
         partContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer;';
 
-        // [핵심] PNG 아이콘 박스
+        // [핵심] 부위별 PNG 아이콘 박스
         const partIcon = document.createElement('div');
-        partIcon.className = 'game-item-box'; // 메인 아이콘과 같은 스타일 공유
+        partIcon.className = 'game-item-box'; 
         partIcon.style.cssText = 'width:50px; height:50px; background: radial-gradient(circle, #5e4b3c 0%, #1a1512 100%); border:2px solid #000; display:flex; align-items:center; justify-content:center; position:relative; box-shadow:inset 0 0 5px rgba(0,0,0,0.5);';
         
-        // 여기에 PNG 이미지가 들어갑니다. (예: 투구.png, 갑옷.png)
-        partIcon.innerHTML = `<img src="images/${part}.png" onerror="this.style.display='none'" style="width:80%; height:80%; object-fit:contain; position:relative; z-index:2;">
-                              <div style="position:absolute; color:#444; font-size:9px; z-index:1;">PNG</div>`;
+        // 아이콘 이미지 + 예비용 글자
+        partIcon.innerHTML = `
+            <img src="images/${part}.png" onerror="this.style.display='none'" style="width:80%; height:80%; object-fit:contain; position:relative; z-index:2;">
+            <div style="position:absolute; color:#444; font-size:9px; z-index:1;">${part}</div>
+        `;
 
-        // 부위 이름 (아이콘 아래 표시)
         const partName = document.createElement('div');
         partName.className = 'game-item-name';
-        partName.style.width = '100%';
         partName.innerText = part;
 
         partContainer.appendChild(partIcon);
@@ -733,7 +732,7 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
         const openSpec = () => {
             const target = (parts[0] === "무기" || parts[0] === "스텟") ? itemData : itemData[part];
             if (target) {
-                // [스텟] 줄바꿈 디자인 적용
+                // [요청반영] [스텟] 머리말 다음 줄바꿈 적용
                 fixedSpecBox.innerHTML = `
                     <div style="margin-bottom:8px;">
                         <div style="color:#d4af37; font-weight:900; font-size:13px;">[스텟]</div>
@@ -749,7 +748,6 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
                 fixedSpecBox.style.display = 'block';
                 
                 if(!isAutoOpen) {
-                    // 선택된 아이콘 테두리 강조
                     Array.from(partGrid.children).forEach(child => child.firstChild.style.borderColor = '#000');
                     partIcon.style.borderColor = '#b8860b';
                 }
@@ -758,7 +756,6 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
 
         partContainer.onclick = (e) => { e.stopPropagation(); openSpec(); };
         partGrid.appendChild(partContainer);
-        
         if (isAutoOpen) openSpec();
     });
 
@@ -794,7 +791,7 @@ function renderBlacksmithData() {
     container.appendChild(detailContainer);
 }
 
-// [22] 2단계: 아이템 선택 (방어구/무기 텍스트 버튼형으로 개선)
+// [22] 2단계: 아이템 선택 (방어구=텍스트, 무기=아이콘+이름 분리)
 function showLevelDetail(level) {
     const detailArea = document.getElementById('blacksmith-detail-area');
     if (!detailArea) return;
@@ -808,8 +805,6 @@ function showLevelDetail(level) {
 
     for (const category in data) {
         const catData = data[category];
-        
-        // 카테고리 제목 및 재료 정보 (생략 - 기존 로직 유지)
         const catTitle = document.createElement('div');
         catTitle.style.cssText = 'font-weight:900; background:#2a211a; color:#d4af37; padding:8px; margin-top:20px; border-left:4px solid #b8860b; font-size:13px;';
         catTitle.innerText = `[${category}]`;
@@ -823,18 +818,21 @@ function showLevelDetail(level) {
         }
 
         const itemGrid = document.createElement('div');
-        itemGrid.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px;';
+        // 삐져나가지 않게 gap 조정
+        itemGrid.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 15px;';
 
         for (const itemName in catData.items) {
             const itemContainer = document.createElement('div');
             itemContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer;';
 
             if (category === "무기") {
-                // [무기] PNG 아이콘 + 하단 이름 구조
+                // [무기] 아이콘 + 아래 이름
                 const itemBox = document.createElement('div');
                 itemBox.className = 'game-item-box'; 
-                // 추후 background-image: url('images/${itemName}.png') 등으로 수정 가능
-                itemBox.innerHTML = `<img src="images/${itemName}.png" onerror="this.style.display='none'" style="width:80%; height:80%; object-fit:contain;">`;
+                itemBox.innerHTML = `
+                    <img src="images/${itemName}.png" onerror="this.style.display='none'" style="width:80%; height:80%; object-fit:contain; position:relative; z-index:2;">
+                    <div style="position:absolute; color:#444; font-size:9px; z-index:1;">PNG</div>
+                `;
 
                 const nameLabel = document.createElement('div');
                 nameLabel.className = 'game-item-name';
@@ -843,7 +841,7 @@ function showLevelDetail(level) {
                 itemContainer.appendChild(itemBox);
                 itemContainer.appendChild(nameLabel);
             } else {
-                // [방어구] 텍스트 버튼 구조
+                // [방어구] 텍스트 버튼 (광설, 백비 등)
                 const itemBtn = document.createElement('div');
                 itemBtn.className = 'level-btn-style'; 
                 itemBtn.style.cssText = 'padding: 10px 2px; font-size: 11px; width: 100%; min-height: 35px; display: flex; align-items: center; justify-content: center; word-break: keep-all; box-sizing: border-box;';
@@ -852,9 +850,13 @@ function showLevelDetail(level) {
             }
 
             itemContainer.onclick = function() {
-                document.querySelectorAll('.game-item-box, .level-btn-style').forEach(el => el.classList.remove('selected', 'active'));
-                const target = itemContainer.firstChild;
-                target.classList.add(category === "무기" ? 'selected' : 'active');
+                // 전체 하이라이트 초기화
+                document.querySelectorAll('.game-item-box, .level-btn-style').forEach(el => {
+                    el.classList.remove('selected', 'active');
+                });
+                
+                const targetEl = itemContainer.firstChild;
+                targetEl.classList.add(category === "무기" ? 'selected' : 'active');
                 
                 const parts = (category === "방어구") ? ["투구", "갑옷", "허리띠", "신발"] : ["무기"];
                 showPartDetail(itemName, catData.items[itemName], parts, itemGrid, (parts.length === 1));
