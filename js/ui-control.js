@@ -683,7 +683,7 @@ window.toggleBlacksmithWindow = function() {
     }
 };
 
-// [20] 3단계: 부위별 상세 정보 렌더링 (방어구 부위 PNG 아이콘화 + 스텟 줄바꿈 적용)
+// [20] 3단계: 부위별 상세 정보 렌더링 (방어구 상세 PNG 연동)
 function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
     const partArea = parentGrid.nextElementSibling;
     if (!partArea) return;
@@ -691,7 +691,6 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
     partArea.innerHTML = '';
     partArea.style.cssText = 'margin-top:10px; padding:10px; position: relative;';
 
-    // 스텟 정보 박스 (차분한 골드 톤)
     const fixedSpecBox = document.createElement('div');
     fixedSpecBox.style.cssText = `
         display: none; font-size: 12px; background: #15110e; padding: 12px; 
@@ -700,7 +699,6 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
         box-sizing: border-box; border-radius: 4px;
     `;
     
-    // 투구, 갑옷 등 부위 아이콘 그리드
     const partGrid = document.createElement('div');
     partGrid.style.cssText = `
         display: ${isAutoOpen ? 'none' : 'grid'}; 
@@ -708,19 +706,20 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
     `;
 
     parts.forEach(part => {
+        const partSpecificData = (parts[0] === "무기" || parts[0] === "스텟") ? itemData : itemData[part];
         const partContainer = document.createElement('div');
         partContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer;';
 
-        // [핵심] 부위별 PNG 아이콘 박스
         const partIcon = document.createElement('div');
         partIcon.className = 'game-item-box'; 
-        partIcon.style.cssText = 'width:50px; height:50px; background: radial-gradient(circle, #5e4b3c 0%, #1a1512 100%); border:2px solid #000; display:flex; align-items:center; justify-content:center; position:relative; box-shadow:inset 0 0 5px rgba(0,0,0,0.5);';
         
-        // 아이콘 이미지 + 예비용 글자
-        partIcon.innerHTML = `
-            <img src="images/${part}.png" onerror="this.style.display='none'" style="width:80%; height:80%; object-fit:contain; position:relative; z-index:2;">
-            <div style="position:absolute; color:#444; font-size:9px; z-index:1;">${part}</div>
-        `;
+        // [수정] 데이터에 file(PNG파일명)이 있으면 해당 이미지를 출력
+        if (partSpecificData && partSpecificData.file) {
+            partIcon.innerHTML = `<img src="images/${partSpecificData.file}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">
+                                  <div style="position:absolute; color:#444; font-size:9px; z-index:1;">${part}</div>`;
+        } else {
+            partIcon.innerHTML = `<div style="color:#eee7c5; font-size:10px; font-weight:900;">${part}</div>`;
+        }
 
         const partName = document.createElement('div');
         partName.className = 'game-item-name';
@@ -730,18 +729,16 @@ function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
         partContainer.appendChild(partName);
 
         const openSpec = () => {
-            const target = (parts[0] === "무기" || parts[0] === "스텟") ? itemData : itemData[part];
-            if (target) {
-                // [요청반영] [스텟] 머리말 다음 줄바꿈 적용
+            if (partSpecificData) {
                 fixedSpecBox.innerHTML = `
                     <div style="margin-bottom:8px;">
                         <div style="color:#d4af37; font-weight:900; font-size:13px;">[스텟]</div>
-                        <div style="color:#eee7c5; font-weight:800; padding-left:4px; margin-top:2px; white-space:pre-wrap;">${target.스텟}</div>
+                        <div style="color:#eee7c5; font-weight:800; padding-left:4px; margin-top:2px; white-space:pre-wrap;">${partSpecificData.스텟}</div>
                     </div>
-                    ${target.일반 ? `
+                    ${partSpecificData.일반 ? `
                         <div style="border-top:1px solid #3d3129; padding-top:6px;">
                             <div style="color:#8c837a; font-weight:900; font-size:11px;">[일반]</div>
-                            <div style="color:#b0a59a; padding-left:4px; margin-top:2px; font-size:11px;">${target.일반}</div>
+                            <div style="color:#b0a59a; padding-left:4px; margin-top:2px; font-size:11px;">${partSpecificData.일반}</div>
                         </div>
                     ` : ''}
                 `;
@@ -927,7 +924,7 @@ function renderAccessoryLevels(typeName, levelsData, targetArea) {
     targetArea.appendChild(itemShowArea);
 }
 
-// [25] 최종 장신구 아이템 아이콘 표시
+// [25] 최종 장신구 아이템 아이콘 표시 (이미지 경로 연동)
 function renderAccessoryItems(lvTitle, items, targetArea) {
     targetArea.innerHTML = '';
     
@@ -939,21 +936,24 @@ function renderAccessoryItems(lvTitle, items, targetArea) {
     infoArea.style.cssText = 'min-height: 5px; margin-top: 10px;';
 
     for (const itemName in items) {
+        const itemData = items[itemName]; // 아이템 데이터 가져오기
         const itemContainer = document.createElement('div');
         itemContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer;';
 
         const itemBox = document.createElement('div');
         itemBox.className = 'game-item-box'; 
 
-        const iconImg = document.createElement('div');
-        iconImg.style.cssText = 'width:80%; height:80%; display:flex; align-items:center; justify-content:center; color:#888; font-size:10px; font-weight:900;';
-        iconImg.innerText = 'IMG';
+        // [수정] 데이터에 file이 있으면 이미지를 넣고, 없으면 글자를 넣습니다.
+        if (itemData.file) {
+            itemBox.innerHTML = `<img src="images/${itemData.file}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain;">`;
+        } else {
+            itemBox.innerHTML = `<div style="color:#444; font-size:10px; font-weight:900;">IMG</div>`;
+        }
 
         const nameLabel = document.createElement('div');
         nameLabel.className = 'game-item-name';
         nameLabel.innerText = itemName;
 
-        itemBox.appendChild(iconImg);
         itemContainer.appendChild(itemBox);
         itemContainer.appendChild(nameLabel);
 
