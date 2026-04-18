@@ -1,4 +1,4 @@
-// ui-control.js 맨 위나 적절한 위치에 추가
+// ui-control.js 맨 위나 적절한 위치
 let eventStartTime = Date.now(); // 유저가 웹맵에 접속한 시간 기록
 
 // ==========================================
