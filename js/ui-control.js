@@ -628,11 +628,16 @@ function moveToLocation(target) {
 // [18] 비급 정보 제어 기능
 window.toggleSkillWindow = function() {
     const win = document.getElementById('skill-window');
+    const danWin = document.getElementById('dan-window'); // 영단창 참조 유지
     const blacksmithWin = document.getElementById('blacksmith-window');
+    
     if (!win) return;
 
     if (win.style.display === 'none' || win.style.display === '') {
-        if (blacksmithWin) blacksmithWin.style.display = 'none'; // 대장장이창도 같이 닫아주면 좋겠죠?
+        // 비급 열 때 영단, 대장장이창 닫기 (기능 유지)
+        if (blacksmithWin) blacksmithWin.style.display = 'none';
+        if (danWin) danWin.style.display = 'none'; 
+        
         win.style.display = 'block';
         renderSkillList();
     } else {
@@ -664,37 +669,30 @@ window.renderSkillList = function() {
     }).join('');
 };
 
-// 버튼 클릭 이벤트 연결
-const skillBtn = document.getElementById('skill-btn');
-if (skillBtn) {
-    skillBtn.addEventListener('click', toggleSkillWindow);
-}
-
 // [18-2] 영단 정보 제어 기능
 window.toggleDanWindow = function() {
-    const win = document.getElementById('dan-window'); // HTML에 생성할 ID
+    const win = document.getElementById('dan-window');
     const skillWin = document.getElementById('skill-window');
     const blacksmithWin = document.getElementById('blacksmith-window');
     
     if (!win) return;
 
     if (win.style.display === 'none' || win.style.display === '') {
-        // 다른 창들은 닫아주기
+        // 영단 열 때 비급, 대장장이창 닫기 (기능 유지)
         if (skillWin) skillWin.style.display = 'none';
         if (blacksmithWin) blacksmithWin.style.display = 'none';
         
         win.style.display = 'block';
-        renderDanList(); // 영단 리스트 렌더링 호출
+        renderDanList();
     } else {
         win.style.display = 'none';
     }
 };
 
 window.renderDanList = function() {
-    const container = document.getElementById('dan-list-content'); // HTML에 생성할 내용 영역 ID
+    const container = document.getElementById('dan-list-content');
     if (!container) return;
 
-    // data.js에 넣은 danData 배열을 사용함
     container.innerHTML = danData.map(dan => {
         return `
             <div style="margin-bottom: 20px; border-bottom: 1px solid #3d3129; padding-bottom: 15px; display: flex; align-items: center;">
@@ -715,11 +713,9 @@ window.renderDanList = function() {
     }).join('');
 };
 
-// 영단 버튼 클릭 이벤트 연결 (youngdan.png 사용)
-const danBtn = document.getElementById('dan-btn');
-if (danBtn) {
-    danBtn.addEventListener('click', toggleDanWindow);
-}
+// 버튼 이벤트 리스너 (상단 바 요소들에 연결)
+document.getElementById('skill-btn')?.addEventListener('click', toggleSkillWindow);
+document.getElementById('dan-btn')?.addEventListener('click', toggleDanWindow);
 
 
 // [19] 대장장이 정보창 토글
