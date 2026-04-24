@@ -886,18 +886,17 @@ function showPickaxeDetail(pick) {
     detailArea.innerHTML = `
         <div style="margin-top:20px; padding:12px; background:#15110e; border:2px solid #5e4b3c; border-radius:4px; box-shadow:4px 4px 10px rgba(0,0,0,0.5);">
             <div style="color:#d4af37; font-weight:900; font-size:14px; margin-bottom:10px; border-bottom:1px solid #3d3129; padding-bottom:5px;">
-                ⚒️ ${pick.name} 제작 정보
+              ${pick.name} 제작 정보
             </div>
             <div style="margin-bottom:10px;">
                 <div style="color:#c5a368; font-weight:900; font-size:12px;">[필요 가공템]</div>
                 <div style="color:#eee7c5; font-size:11px; padding-left:4px; margin-top:2px;">${pick.materials}</div>
             </div>
             <div style="margin-bottom:10px;">
-                <div style="color:#8c837a; font-weight:900; font-size:12px;">[소요 원재료 전체]</div>
+                <div style="color:#8c837a; font-weight:900; font-size:12px;">[소요 재료]</div>
                 <div style="color:#b0a59a; font-size:11px; padding-left:4px; margin-top:2px; word-break:keep-all;">${pick.rawMaterials}</div>
             </div>
             <div style="margin-top:10px; border-top:1px solid #3d3129; padding-top:10px; text-align:center;">
-                <div style="color:#666; font-size:10px; margin-bottom:8px;">제작창 조합 가이드</div>
                 <img src="images/${pick.craftFile}" style="max-width:100%; border:1px solid #4a3d33; border-radius:2px;" onerror="this.style.display='none'">
             </div>
         </div>
