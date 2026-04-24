@@ -153,11 +153,25 @@ display: none; z-index: 1002; max-height: 300px; overflow-y: auto;
 <div id="skill-btn"><img src="images/skill.png" style="width: 44px; height: 44px; border: 2px solid #000; background: #fff; box-shadow: 4px 4px 0px rgba(0,0,0,0.2);"></div>
 <div id="skill-window">
 <div style="background: #000; color: #fff; padding: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;">
-<span>📜 비급 획득 정보</span>
+<span>📜 비급 정보</span>
 <span onclick="toggleSkillWindow()" style="cursor: pointer; font-size: 18px;">✖</span>
 </div>
 <div id="skill-list-content" style="padding: 12px;"></div>
 </div>
+
+  <div id="dan-btn" style="margin-top: 10px;">
+    <img src="images/youngdan.png" style="width: 44px; height: 44px; border: 2px solid #000; background: #fff; box-shadow: 4px 4px 0px rgba(0,0,0,0.2); cursor: pointer;">
+</div>
+
+<div id="dan-window" style="display: none; position: fixed; top: 100px; right: 20px; width: 300px; max-height: 500px; background: #1a1512; border: 3px solid #5e4b3c; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-radius: 4px;">
+    <div style="background: #000; color: #fff; padding: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;">
+        <span>⚫​ 영단 정보</span>
+        <span onclick="toggleDanWindow()" style="cursor: pointer; font-size: 18px;">✖</span>
+    </div>
+    <div id="dan-list-content" style="padding: 12px;"></div>
+</div>
+
+  
 
 <div id="blacksmith-window">
 <div style="background: #000; color: #fff; padding: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;">
