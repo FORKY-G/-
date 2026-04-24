@@ -731,284 +731,348 @@ window.toggleBlacksmithWindow = function() {
 
 // [20] 3단계: 부위별 상세 정보 렌더링 (방어구 상세 PNG 연동)
 function showPartDetail(itemName, itemData, parts, parentGrid, isAutoOpen) {
-const partArea = parentGrid.nextElementSibling;
-if (!partArea) return;
+    const partArea = parentGrid.nextElementSibling;
+    if (!partArea) return;
 
-partArea.innerHTML = '';
-partArea.style.cssText = 'margin-top:10px; padding:10px; position: relative;';
+    partArea.innerHTML = '';
+    partArea.style.cssText = 'margin-top:10px; padding:10px; position: relative;';
 
-const fixedSpecBox = document.createElement('div');
-fixedSpecBox.style.cssText = `
-       display: none; font-size: 12px; background: #15110e; padding: 12px; 
-       border: 2px solid #5e4b3c; margin-top: 10px; line-height: 1.6;
-       box-shadow: 4px 4px 10px rgba(0,0,0,0.5); width: calc(100% - 20px); 
-       box-sizing: border-box; border-radius: 4px;
-   `;
+    const fixedSpecBox = document.createElement('div');
+    fixedSpecBox.style.cssText = `
+        display: none; font-size: 12px; background: #15110e; padding: 12px; 
+        border: 2px solid #5e4b3c; margin-top: 10px; line-height: 1.6;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.5); width: calc(100% - 20px); 
+        box-sizing: border-box; border-radius: 4px;
+    `;
 
-const partGrid = document.createElement('div');
-partGrid.style.cssText = `
-       display: ${isAutoOpen ? 'none' : 'grid'}; 
-       grid-template-columns: repeat(4, 1fr); gap: 8px;
-   `;
+    const partGrid = document.createElement('div');
+    partGrid.style.cssText = `
+        display: ${isAutoOpen ? 'none' : 'grid'}; 
+        grid-template-columns: repeat(4, 1fr); gap: 8px;
+    `;
 
-parts.forEach(part => {
-const partSpecificData = (parts[0] === "무기" || parts[0] === "스텟") ? itemData : itemData[part];
-const partContainer = document.createElement('div');
-partContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer;';
+    parts.forEach(part => {
+        const partSpecificData = (parts[0] === "무기" || parts[0] === "스텟") ? itemData : itemData[part];
+        const partContainer = document.createElement('div');
+        partContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer;';
 
-const partIcon = document.createElement('div');
-partIcon.className = 'game-item-box'; 
+        const partIcon = document.createElement('div');
+        partIcon.className = 'game-item-box'; 
 
-// 데이터에 file이 있으면 해당 파일을, 없으면 기본 이름.png를 시도합니다.
-let imgName = (partSpecificData && partSpecificData.file) ? partSpecificData.file : `${part}.png`;
+        let imgName = (partSpecificData && partSpecificData.file) ? partSpecificData.file : `${part}.png`;
 
-partIcon.innerHTML = `
-           <img src="images/${imgName}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">
-           <div style="position:absolute; color:#444; font-size:9px; z-index:1;">${part}</div>
-       `;
+        partIcon.innerHTML = `
+            <img src="images/${imgName}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">
+            <div style="position:absolute; color:#444; font-size:9px; z-index:1;">${part}</div>
+        `;
 
-const partName = document.createElement('div');
-partName.className = 'game-item-name';
-partName.innerText = part;
+        const partName = document.createElement('div');
+        partName.className = 'game-item-name';
+        partName.innerText = part;
 
-partContainer.appendChild(partIcon);
-partContainer.appendChild(partName);
+        partContainer.appendChild(partIcon);
+        partContainer.appendChild(partName);
 
-const openSpec = () => {
-if (partSpecificData) {
-fixedSpecBox.innerHTML = `
-                   <div style="margin-bottom:8px;">
-                       <div style="color:#d4af37; font-weight:900; font-size:13px;">[스텟]</div>
-                       <div style="color:#eee7c5; font-weight:800; padding-left:4px; margin-top:2px; white-space:pre-wrap;">${partSpecificData.스텟}</div>
-                   </div>
-                   ${partSpecificData.일반 ? `
-                       <div style="border-top:1px solid #3d3129; padding-top:6px;">
-                           <div style="color:#8c837a; font-weight:900; font-size:11px;">[일반]</div>
-                           <div style="color:#b0a59a; padding-left:4px; margin-top:2px; font-size:11px;">${partSpecificData.일반}</div>
-                       </div>
-                   ` : ''}
-               `;
-fixedSpecBox.style.display = 'block';
+        const openSpec = () => {
+            if (partSpecificData) {
+                fixedSpecBox.innerHTML = `
+                    <div style="margin-bottom:8px;">
+                        <div style="color:#d4af37; font-weight:900; font-size:13px;">[스텟]</div>
+                        <div style="color:#eee7c5; font-weight:800; padding-left:4px; margin-top:2px; white-space:pre-wrap;">${partSpecificData.스텟}</div>
+                    </div>
+                    ${partSpecificData.일반 ? `
+                        <div style="border-top:1px solid #3d3129; padding-top:6px;">
+                            <div style="color:#8c837a; font-weight:900; font-size:11px;">[일반]</div>
+                            <div style="color:#b0a59a; padding-left:4px; margin-top:2px; font-size:11px;">${partSpecificData.일반}</div>
+                        </div>
+                    ` : ''}
+                `;
+                fixedSpecBox.style.display = 'block';
 
-if(!isAutoOpen) {
-Array.from(partGrid.children).forEach(child => child.firstChild.style.borderColor = '#000');
-partIcon.style.borderColor = '#b8860b';
+                if(!isAutoOpen) {
+                    Array.from(partGrid.children).forEach(child => child.firstChild.style.borderColor = '#000');
+                    partIcon.style.borderColor = '#b8860b';
+                }
+            }
+        };
+
+        partContainer.onclick = (e) => { e.stopPropagation(); openSpec(); };
+        partGrid.appendChild(partContainer);
+        if (isAutoOpen) openSpec();
+    });
+
+    partArea.appendChild(partGrid);
+    partArea.appendChild(fixedSpecBox);
 }
-}
-};
 
-partContainer.onclick = (e) => { e.stopPropagation(); openSpec(); };
-partGrid.appendChild(partContainer);
-if (isAutoOpen) openSpec();
-});
-
-partArea.appendChild(partGrid);
-partArea.appendChild(fixedSpecBox);
-}
-
-// [21] 1단계: 메인 레벨 선택
+// [21] 1단계: 메인 레벨 선택 (곡괭이 제작 추가됨)
 function renderBlacksmithData() {
-const container = document.getElementById('blacksmith-list-content');
-if (!container) return;
-container.innerHTML = ''; 
+    const container = document.getElementById('blacksmith-list-content');
+    if (!container) return;
+    container.innerHTML = ''; 
 
-const gridWrapper = document.createElement('div');
-gridWrapper.style.cssText = 'display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;';
+    // 상단 레벨 버튼 그리드
+    const gridWrapper = document.createElement('div');
+    gridWrapper.style.cssText = 'display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;';
 
-for (const level in blacksmithData) {
-const levelBtn = document.createElement('div');
-levelBtn.className = 'level-btn-style'; 
-levelBtn.innerText = level;
+    for (const level in blacksmithData) {
+        const levelBtn = document.createElement('div');
+        levelBtn.className = 'level-btn-style'; 
+        levelBtn.innerText = level;
 
-levelBtn.onclick = function() {
-Array.from(gridWrapper.children).forEach(btn => btn.classList.remove('active'));
-this.classList.add('active');
-showLevelDetail(level);
-};
-gridWrapper.appendChild(levelBtn);
+        levelBtn.onclick = function() {
+            Array.from(gridWrapper.children).forEach(btn => btn.classList.remove('active'));
+            // 곡괭이 선택 효과 초기화
+            document.querySelectorAll('.pick-container').forEach(el => el.style.background = 'none');
+            this.classList.add('active');
+            showLevelDetail(level);
+        };
+        gridWrapper.appendChild(levelBtn);
+    }
+    container.appendChild(gridWrapper);
+
+    // --- [신규] 곡괭이 제작 섹션 (그리드 바로 아래 한 줄 추가) ---
+    const pickTitle = document.createElement('div');
+    pickTitle.style.cssText = 'font-weight:900; background:#2a211a; color:#d4af37; padding:8px; margin-top:10px; border-left:4px solid #b8860b; font-size:13px;';
+    pickTitle.innerText = "⛏️ 곡괭이 제작";
+    container.appendChild(pickTitle);
+
+    const pickGrid = document.createElement('div');
+    pickGrid.style.cssText = 'display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; padding: 0 5px;';
+
+    pickaxeData.forEach(pick => {
+        const pickContainer = document.createElement('div');
+        pickContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 5px; border-radius: 4px; transition: background 0.2s;';
+        pickContainer.className = 'pick-container';
+
+        const pickBox = document.createElement('div');
+        pickBox.className = 'game-item-box';
+        pickBox.style.cssText = 'width:48px; height:48px; background: radial-gradient(circle, #5e4b3c 0%, #1a1512 100%); border:2px solid #000; display:flex; align-items:center; justify-content:center; position:relative; box-shadow:inset 0 0 8px rgba(0,0,0,0.8);';
+        pickBox.innerHTML = `<img src="images/${pick.file}" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">`;
+
+        const pickName = document.createElement('div');
+        pickName.className = 'game-item-name';
+        pickName.style.cssText = 'margin-top:6px; font-size:10px; font-weight:900; color:#ffffff; text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; text-align:center; word-break:keep-all; width:52px;';
+        pickName.innerText = pick.name.replace('곡괭이', '');
+
+        pickContainer.appendChild(pickBox);
+        pickContainer.appendChild(pickName);
+
+        pickContainer.onclick = function() {
+            // 다른 레벨 버튼 및 곡괭이 선택 상태 초기화
+            Array.from(gridWrapper.children).forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.game-item-box').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.pick-container').forEach(el => el.style.background = 'none');
+            
+            // 현재 곡괭이 강조
+            pickBox.classList.add('selected');
+            pickContainer.style.background = 'rgba(184, 134, 11, 0.2)';
+            
+            showPickaxeDetail(pick);
+        };
+        pickGrid.appendChild(pickContainer);
+    });
+    container.appendChild(pickGrid);
+
+    const detailContainer = document.createElement('div');
+    detailContainer.id = 'blacksmith-detail-area';
+    container.appendChild(detailContainer);
 }
-container.appendChild(gridWrapper);
 
-const detailContainer = document.createElement('div');
-detailContainer.id = 'blacksmith-detail-area';
-container.appendChild(detailContainer);
+// [21-2] 곡괭이 전용 상세 정보 렌더링
+function showPickaxeDetail(pick) {
+    const detailArea = document.getElementById('blacksmith-detail-area');
+    if (!detailArea) return;
+    detailArea.innerHTML = `
+        <div style="margin-top:20px; padding:12px; background:#15110e; border:2px solid #5e4b3c; border-radius:4px; box-shadow:4px 4px 10px rgba(0,0,0,0.5);">
+            <div style="color:#d4af37; font-weight:900; font-size:14px; margin-bottom:10px; border-bottom:1px solid #3d3129; padding-bottom:5px;">
+                ⚒️ ${pick.name} 제작 정보
+            </div>
+            <div style="margin-bottom:10px;">
+                <div style="color:#c5a368; font-weight:900; font-size:12px;">[필요 가공템]</div>
+                <div style="color:#eee7c5; font-size:11px; padding-left:4px; margin-top:2px;">${pick.materials}</div>
+            </div>
+            <div style="margin-bottom:10px;">
+                <div style="color:#8c837a; font-weight:900; font-size:12px;">[소요 원재료 전체]</div>
+                <div style="color:#b0a59a; font-size:11px; padding-left:4px; margin-top:2px; word-break:keep-all;">${pick.rawMaterials}</div>
+            </div>
+            <div style="margin-top:10px; border-top:1px solid #3d3129; padding-top:10px; text-align:center;">
+                <div style="color:#666; font-size:10px; margin-bottom:8px;">제작창 조합 가이드</div>
+                <img src="images/${pick.craftFile}" style="max-width:100%; border:1px solid #4a3d33; border-radius:2px;" onerror="this.style.display='none'">
+            </div>
+        </div>
+    `;
 }
 
 // [22] 2단계: 아이템 선택 (무기 그리드 삐져나감 방지 보정 버전)
 function showLevelDetail(level) {
-const detailArea = document.getElementById('blacksmith-detail-area');
-if (!detailArea) return;
-detailArea.innerHTML = '';
-const data = blacksmithData[level];
+    const detailArea = document.getElementById('blacksmith-detail-area');
+    if (!detailArea) return;
+    detailArea.innerHTML = '';
+    const data = blacksmithData[level];
 
-if (level === "장신구") {
-renderAccessory(level, data, detailArea);
-return;
-}
+    if (level === "장신구") {
+        renderAccessory(level, data, detailArea);
+        return;
+    }
 
-for (const category in data) {
-const catData = data[category];
-const catTitle = document.createElement('div');
-catTitle.style.cssText = 'font-weight:900; background:#2a211a; color:#d4af37; padding:8px; margin-top:20px; border-left:4px solid #b8860b; font-size:13px;';
-catTitle.innerText = `[${category}]`;
-detailArea.appendChild(catTitle);
+    for (const category in data) {
+        const catData = data[category];
+        const catTitle = document.createElement('div');
+        catTitle.style.cssText = 'font-weight:900; background:#2a211a; color:#d4af37; padding:8px; margin-top:20px; border-left:4px solid #b8860b; font-size:13px;';
+        catTitle.innerText = `[${category}]`;
+        detailArea.appendChild(catTitle);
 
-if (catData.materials) {
-const matInfo = document.createElement('div');
-matInfo.style.cssText = 'font-size:11px; color:#eee7c5; margin:8px 0; font-weight:700; background:#251e19; padding:10px; border:1px solid #4a3d33; border-radius:4px; line-height:1.4;';
-matInfo.innerHTML = `<div style="color:#d4af37; margin-bottom:2px;">필요 재료: ${catData.materials}</div><div style="color:#8c837a;">주문서 횟수: ${catData.scrollCount}회</div>`;
-detailArea.appendChild(matInfo);
-}
+        if (catData.materials) {
+            const matInfo = document.createElement('div');
+            matInfo.style.cssText = 'font-size:11px; color:#eee7c5; margin:8px 0; font-weight:700; background:#251e19; padding:10px; border:1px solid #4a3d33; border-radius:4px; line-height:1.4;';
+            matInfo.innerHTML = `<div style="color:#d4af37; margin-bottom:2px;">필요 재료: ${catData.materials}</div><div style="color:#8c837a;">주문서 횟수: ${catData.scrollCount}회</div>`;
+            detailArea.appendChild(matInfo);
+        }
 
-const itemGrid = document.createElement('div');
-itemGrid.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 15px; padding: 0 5px;';
+        const itemGrid = document.createElement('div');
+        itemGrid.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 15px; padding: 0 5px;';
 
-for (const itemName in catData.items) {
-const itemData = catData.items[itemName];
-const itemContainer = document.createElement('div');
-itemContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 100%;';
+        for (const itemName in catData.items) {
+            const itemData = catData.items[itemName];
+            const itemContainer = document.createElement('div');
+            itemContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 100%;';
 
-if (category === "무기") {
-const itemBox = document.createElement('div');
-itemBox.className = 'game-item-box'; 
-itemBox.style.cssText = 'width:48px; height:48px; background: radial-gradient(circle, #5e4b3c 0%, #1a1512 100%); border:2px solid #000; display:flex; align-items:center; justify-content:center; position:relative; box-shadow:inset 0 0 8px rgba(0,0,0,0.8);';
+            if (category === "무기") {
+                const itemBox = document.createElement('div');
+                itemBox.className = 'game-item-box'; 
+                itemBox.style.cssText = 'width:48px; height:48px; background: radial-gradient(circle, #5e4b3c 0%, #1a1512 100%); border:2px solid #000; display:flex; align-items:center; justify-content:center; position:relative; box-shadow:inset 0 0 8px rgba(0,0,0,0.8);';
 
-let weaponImg = itemData.file ? itemData.file : `${itemName}.png`;
-itemBox.innerHTML = `
-                   <img src="images/${weaponImg}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">
-                   <div style="position:absolute; color:#444; font-size:8px; z-index:1;">PNG</div>
-               `;
+                let weaponImg = itemData.file ? itemData.file : `${itemName}.png`;
+                itemBox.innerHTML = `
+                    <img src="images/${weaponImg}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">
+                    <div style="position:absolute; color:#444; font-size:8px; z-index:1;">PNG</div>
+                `;
 
-const nameLabel = document.createElement('div');
-nameLabel.className = 'game-item-name';
-nameLabel.style.cssText = 'margin-top:6px; font-size:10px; font-weight:900; color:#ffffff; text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; text-align:center; word-break:keep-all; width:52px;';
-nameLabel.innerText = itemName;
+                const nameLabel = document.createElement('div');
+                nameLabel.className = 'game-item-name';
+                nameLabel.style.cssText = 'margin-top:6px; font-size:10px; font-weight:900; color:#ffffff; text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; text-align:center; word-break:keep-all; width:52px;';
+                nameLabel.innerText = itemName;
 
-itemContainer.appendChild(itemBox);
-itemContainer.appendChild(nameLabel);
+                itemContainer.appendChild(itemBox);
+                itemContainer.appendChild(nameLabel);
 
-} else {
-const itemBtn = document.createElement('div');
-itemBtn.className = 'level-btn-style'; 
-itemBtn.style.cssText = 'padding: 10px 2px; font-size: 11px; width: 100%; min-height: 35px; display: flex; align-items: center; justify-content: center; word-break: keep-all; box-sizing: border-box;';
-itemBtn.innerText = itemName;
-itemContainer.appendChild(itemBtn);
-}
+            } else {
+                const itemBtn = document.createElement('div');
+                itemBtn.className = 'level-btn-style'; 
+                itemBtn.style.cssText = 'padding: 10px 2px; font-size: 11px; width: 100%; min-height: 35px; display: flex; align-items: center; justify-content: center; word-break: keep-all; box-sizing: border-box;';
+                itemBtn.innerText = itemName;
+                itemContainer.appendChild(itemBtn);
+            }
 
-itemContainer.onclick = function() {
-document.querySelectorAll('.game-item-box, .level-btn-style').forEach(el => {
-el.classList.remove('selected', 'active');
-});
-const targetEl = itemContainer.firstChild;
-targetEl.classList.add(category === "무기" ? 'selected' : 'active');
+            itemContainer.onclick = function() {
+                document.querySelectorAll('.game-item-box, .level-btn-style').forEach(el => {
+                    el.classList.remove('selected', 'active');
+                });
+                const targetEl = itemContainer.firstChild;
+                targetEl.classList.add(category === "무기" ? 'selected' : 'active');
 
-const parts = (category === "방어구") ? ["투구", "갑옷", "허리띠", "신발"] : ["무기"];
-showPartDetail(itemName, catData.items[itemName], parts, itemGrid, (parts.length === 1));
-};
-itemGrid.appendChild(itemContainer);
-}
-detailArea.appendChild(itemGrid);
-const infoArea = document.createElement('div');
-infoArea.className = 'part-detail-area-container';
-detailArea.appendChild(infoArea);
-}
+                const parts = (category === "방어구") ? ["투구", "갑옷", "허리띠", "신발"] : ["무기"];
+                showPartDetail(itemName, catData.items[itemName], parts, itemGrid, (parts.length === 1));
+            };
+            itemGrid.appendChild(itemContainer);
+        }
+        detailArea.appendChild(itemGrid);
+        const infoArea = document.createElement('div');
+        infoArea.className = 'part-detail-area-container';
+        detailArea.appendChild(infoArea);
+    }
 }
 
 // [23] 장신구 큰 카테고리
 function renderAccessory(level, catData, detailArea) {
-const typeGrid = document.createElement('div');
-typeGrid.style.cssText = 'display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px;';
+    const typeGrid = document.createElement('div');
+    typeGrid.style.cssText = 'display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px;';
 
-for (const type in catData) {
-const typeBtn = document.createElement('div');
-typeBtn.className = 'level-btn-style'; 
-typeBtn.innerText = type;
-typeBtn.onclick = function() {
-Array.from(typeGrid.children).forEach(btn => btn.classList.remove('active'));
-this.classList.add('active');
-renderAccessoryLevels(type, catData[type], accessoryMainArea);
-};
-typeGrid.appendChild(typeBtn);
-}
-detailArea.appendChild(typeGrid);
-const accessoryMainArea = document.createElement('div');
-detailArea.appendChild(accessoryMainArea);
+    for (const type in catData) {
+        const typeBtn = document.createElement('div');
+        typeBtn.className = 'level-btn-style'; 
+        typeBtn.innerText = type;
+        typeBtn.onclick = function() {
+            Array.from(typeGrid.children).forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            renderAccessoryLevels(type, catData[type], accessoryMainArea);
+        };
+        typeGrid.appendChild(typeBtn);
+    }
+    detailArea.appendChild(typeGrid);
+    const accessoryMainArea = document.createElement('div');
+    detailArea.appendChild(accessoryMainArea);
 }
 
 // [24] 장신구 레벨 선택
 function renderAccessoryLevels(typeName, levelsData, targetArea) {
-targetArea.innerHTML = ''; 
-const lvGrid = document.createElement('div');
-lvGrid.style.cssText = 'display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px;';
+    targetArea.innerHTML = ''; 
+    const lvGrid = document.createElement('div');
+    lvGrid.style.cssText = 'display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px;';
 
-for (const lvKey in levelsData) {
-const lvBtn = document.createElement('div');
-lvBtn.className = 'level-btn-style';
-lvBtn.style.padding = '12px 5px';
-lvBtn.innerText = lvKey;
-lvBtn.onclick = function() {
-Array.from(lvGrid.children).forEach(btn => btn.classList.remove('active'));
-this.classList.add('active');
-renderAccessoryItems(lvKey, levelsData[lvKey], itemShowArea);
-};
-lvGrid.appendChild(lvBtn);
-}
-targetArea.appendChild(lvGrid);
-const itemShowArea = document.createElement('div');
-targetArea.appendChild(itemShowArea);
+    for (const lvKey in levelsData) {
+        const lvBtn = document.createElement('div');
+        lvBtn.className = 'level-btn-style';
+        lvBtn.style.padding = '12px 5px';
+        lvBtn.innerText = lvKey;
+        lvBtn.onclick = function() {
+            Array.from(lvGrid.children).forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            renderAccessoryItems(lvKey, levelsData[lvKey], itemShowArea);
+        };
+        lvGrid.appendChild(lvBtn);
+    }
+    targetArea.appendChild(lvGrid);
+    const itemShowArea = document.createElement('div');
+    targetArea.appendChild(itemShowArea);
 }
 
 // [25] 최종 장신구 아이템 아이콘 표시 (이미지 경로 완벽 연동)
 function renderAccessoryItems(lvTitle, items, targetArea) {
-targetArea.innerHTML = '';
+    targetArea.innerHTML = '';
 
-const itemGrid = document.createElement('div');
-// 장신구도 5열로 예쁘게 정렬하고 삐져나가지 않게 gap 조정
-itemGrid.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 15px; padding: 0 5px;';
+    const itemGrid = document.createElement('div');
+    itemGrid.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 15px; padding: 0 5px;';
 
-for (const itemName in items) {
-const itemData = items[itemName]; // [중요] 해당 아이템의 전체 데이터(스텟, file 등)를 가져옴
-const itemContainer = document.createElement('div');
-itemContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 100%;';
+    for (const itemName in items) {
+        const itemData = items[itemName]; 
+        const itemContainer = document.createElement('div');
+        itemContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 100%;';
 
-const itemBox = document.createElement('div');
-itemBox.className = 'game-item-box'; 
-// 무기랑 똑같이 48px로 맞췄습니다.
-itemBox.style.cssText = 'width:48px; height:48px; background: radial-gradient(circle, #5e4b3c 0%, #1a1512 100%); border:2px solid #000; display:flex; align-items:center; justify-content:center; position:relative; box-shadow:inset 0 0 8px rgba(0,0,0,0.8);';
+        const itemBox = document.createElement('div');
+        itemBox.className = 'game-item-box'; 
+        itemBox.style.cssText = 'width:48px; height:48px; background: radial-gradient(circle, #5e4b3c 0%, #1a1512 100%); border:2px solid #000; display:flex; align-items:center; justify-content:center; position:relative; box-shadow:inset 0 0 8px rgba(0,0,0,0.8);';
 
-// [핵심] 데이터에 file명이 있으면 이미지를 출력!
-if (itemData.file) {
-itemBox.innerHTML = `
-               <img src="images/${itemData.file}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">
-               <div style="position:absolute; color:#444; font-size:8px; z-index:1;">PNG</div>
-           `;
-} else {
-// 파일명이 없을 때만 예비용 텍스트 출력
-itemBox.innerHTML = `<div style="color:#eee7c5; font-size:10px; font-weight:900;">IMG</div>`;
-}
+        if (itemData.file) {
+            itemBox.innerHTML = `
+                <img src="images/${itemData.file}" onerror="this.style.display='none'" style="width:85%; height:85%; object-fit:contain; position:relative; z-index:2;">
+                <div style="position:absolute; color:#444; font-size:8px; z-index:1;">PNG</div>
+            `;
+        } else {
+            itemBox.innerHTML = `<div style="color:#eee7c5; font-size:10px; font-weight:900;">IMG</div>`;
+        }
 
-const nameLabel = document.createElement('div');
-nameLabel.className = 'game-item-name';
-nameLabel.style.cssText = 'margin-top:6px; font-size:10px; font-weight:900; color:#ffffff; text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; text-align:center; word-break:keep-all; width:52px;';
-nameLabel.innerText = itemName;
+        const nameLabel = document.createElement('div');
+        nameLabel.className = 'game-item-name';
+        nameLabel.style.cssText = 'margin-top:6px; font-size:10px; font-weight:900; color:#ffffff; text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; text-align:center; word-break:keep-all; width:52px;';
+        nameLabel.innerText = itemName;
 
-itemContainer.appendChild(itemBox);
-itemContainer.appendChild(nameLabel);
+        itemContainer.appendChild(itemBox);
+        itemContainer.appendChild(nameLabel);
 
-itemContainer.onclick = function() {
-document.querySelectorAll('.game-item-box').forEach(el => el.classList.remove('selected'));
-itemBox.classList.add('selected');
-// 장신구는 부위 선택이 없으므로 ["스텟"] 하나만 바로 띄움
-showPartDetail(itemName, itemData, ["스텟"], itemGrid, true);
-};
-itemGrid.appendChild(itemContainer);
-}
-targetArea.appendChild(itemGrid);
+        itemContainer.onclick = function() {
+            document.querySelectorAll('.game-item-box').forEach(el => el.classList.remove('selected'));
+            itemBox.classList.add('selected');
+            showPartDetail(itemName, itemData, ["스텟"], itemGrid, true);
+        };
+        itemGrid.appendChild(itemContainer);
+    }
+    targetArea.appendChild(itemGrid);
 
-// 상세 정보(스텟)가 들어올 공간 추가
-const infoArea = document.createElement('div');
-infoArea.className = 'part-detail-area-container';
-targetArea.appendChild(infoArea);
+    const infoArea = document.createElement('div');
+    infoArea.className = 'part-detail-area-container';
+    targetArea.appendChild(infoArea);
 }
 
 // [21] 팝업 관리 및 제작 아이템 표시
