@@ -670,6 +670,57 @@ if (skillBtn) {
     skillBtn.addEventListener('click', toggleSkillWindow);
 }
 
+// [18-2] 영단 정보 제어 기능
+window.toggleDanWindow = function() {
+    const win = document.getElementById('dan-window'); // HTML에 생성할 ID
+    const skillWin = document.getElementById('skill-window');
+    const blacksmithWin = document.getElementById('blacksmith-window');
+    
+    if (!win) return;
+
+    if (win.style.display === 'none' || win.style.display === '') {
+        // 다른 창들은 닫아주기
+        if (skillWin) skillWin.style.display = 'none';
+        if (blacksmithWin) blacksmithWin.style.display = 'none';
+        
+        win.style.display = 'block';
+        renderDanList(); // 영단 리스트 렌더링 호출
+    } else {
+        win.style.display = 'none';
+    }
+};
+
+window.renderDanList = function() {
+    const container = document.getElementById('dan-list-content'); // HTML에 생성할 내용 영역 ID
+    if (!container) return;
+
+    // data.js에 넣은 danData 배열을 사용함
+    container.innerHTML = danData.map(dan => {
+        return `
+            <div style="margin-bottom: 20px; border-bottom: 1px solid #3d3129; padding-bottom: 15px; display: flex; align-items: center;">
+                <div style="width: 50px; height: 50px; background: #1a1512; border: 2px solid #5e4b3c; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                    <img src="images/${dan.file}" style="width: 80%; height: 80%; object-fit: contain;" onerror="this.src='images/dan9.png'">
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 900; color: #c5a368; font-size: 15px; margin-bottom: 6px;">
+                        ${dan.name}
+                    </div>
+                    <div style="font-size: 12px; color: #b0a59a; font-weight: 700; line-height: 1.5; word-break: keep-all;">
+                        <span style="color: #8c837a;">[효과]</span> ${dan.info}<br>
+                        <span style="color: #8c837a;">[획득]</span> ${dan.source}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+};
+
+// 영단 버튼 클릭 이벤트 연결 (youngdan.png 사용)
+const danBtn = document.getElementById('dan-btn');
+if (danBtn) {
+    danBtn.addEventListener('click', toggleDanWindow);
+}
+
 
 // [19] 대장장이 정보창 토글
 window.toggleBlacksmithWindow = function() {
