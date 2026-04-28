@@ -19,8 +19,7 @@ display: flex; flex-direction: row; align-items: center; justify-content: flex-e
 padding-right: 20px; z-index: 1500; border-bottom: 2px solid #5e4b3c; box-sizing: border-box;
 }
 
-/* [비급/대장장이/영단 정보창 스타일 - 오른쪽 배치 고정] */
-#skill-btn:hover { transform: scale(1.1); }
+/* [모든 정보창 스타일 통일] */
 #skill-window, #blacksmith-window, #dan-window, #prob-window {
 display: none; 
 position: fixed; 
@@ -29,7 +28,7 @@ right: 20px;
 z-index: 1000; 
 width: 320px; 
 max-height: 70vh; 
-background: #1e1a17 !important; /* 눈이 편안한 다크 브라운 */
+background: #1e1a17 !important; 
 border: 2px solid #6d5a4a !important; 
 box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5);
 overflow-y: auto; 
@@ -38,18 +37,26 @@ color: #eee7c5;
 }
 
 /* 스크롤바 디자인 */
-#skill-window::-webkit-scrollbar, #blacksmith-window::-webkit-scrollbar, #dan-window::-webkit-scrollbar { width: 6px; }
-#skill-window::-webkit-scrollbar-thumb, #blacksmith-window::-webkit-scrollbar-thumb, #dan-window::-webkit-scrollbar-thumb { 
+#skill-window::-webkit-scrollbar, #blacksmith-window::-webkit-scrollbar, #dan-window::-webkit-scrollbar, #prob-window::-webkit-scrollbar { width: 6px; }
+#skill-window::-webkit-scrollbar-thumb, #blacksmith-window::-webkit-scrollbar-thumb, #dan-window::-webkit-scrollbar-thumb, #prob-window::-webkit-scrollbar-thumb { 
 background: #5e4b3c; border-radius: 10px; 
 }
-#skill-window::-webkit-scrollbar-track, #blacksmith-window::-webkit-scrollbar-track, #dan-window::-webkit-scrollbar-track { background: #1a1512; }
+#skill-window::-webkit-scrollbar-track, #blacksmith-window::-webkit-scrollbar-track, #dan-window::-webkit-scrollbar-track, #prob-window::-webkit-scrollbar-track { background: #1a1512; }
 
-/* 제목 표시줄 - 고문서 금색으로 변경 */
-#skill-window > div:first-child, #blacksmith-window > div:first-child, #dan-window, #prob-window > div:first-child {
+/* 제목 표시줄 스타일 통일 */
+#skill-window > div:first-child, 
+#blacksmith-window > div:first-child, 
+#dan-window > div:first-child, 
+#prob-window > div:first-child {
 background: #2a241f !important; 
 border-bottom: 2px solid #4a3d33;
-color: #d4af37 !important; /* 쨍하지 않은 차분한 골드 */
+color: #d4af37 !important; 
 position: sticky; top: 0; z-index: 10;
+padding: 12px;
+font-weight: 900;
+display: flex;
+justify-content: space-between;
+align-items: center;
 }
 
 /* [명인 스타일 아이템 박스] */
@@ -62,22 +69,20 @@ cursor: pointer; transition: all 0.1s;
 }
 
 .game-item-box:hover, .game-item-box.selected {
-border-color: #b8860b !important; /* 차분한 호박색 */
+border-color: #b8860b !important; 
 box-shadow: 0 0 12px rgba(184, 134, 11, 0.4);
 }
 
-/* 아이템 이름 스타일 */
 .game-item-name {
 margin-top: 8px; font-size: 11px; font-weight: 900; color: #ffffff;
 text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 text-align: center; word-break: keep-all; width: 60px;
 }
 
-/* [핵심 추가] 대장장이 상단 레벨 버튼 가독성 보정 */
 .level-btn-style {
 background: #2a241f !important; 
 border: 2px solid #4a3d33 !important;
-color: #b0a59a !important; /* 글자색을 밝게 보정 */
+color: #b0a59a !important; 
 padding: 15px 5px; text-align: center; font-weight: 900; 
 cursor: pointer; box-shadow: 3px 3px 0px rgba(0,0,0,0.3);
 }
@@ -87,7 +92,6 @@ border-color: #d4af37 !important;
 color: #fff !important;
 }
 
-/* [사이드바 메뉴 스타일] */
 #toggle-sidebar {
 background: #fff; border: 2px solid #000; padding: 7px 12px; cursor: pointer;
 font-weight: 900; box-shadow: 4px 4px 0px rgba(0,0,0,0.2); font-size: 14px;
@@ -101,7 +105,6 @@ transition: max-height 0.4s ease; color: #000; padding: 0; z-index: 1001;
 }
 #controls.active { max-height: 80vh; border: 2px solid #000; padding: 12px; }
 
-/* [기타 UI 스타일] */
 #search-results {
 position: absolute; top: 40px; left: 0; width: 240px; background: white;
 border: 2px solid #000; box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
@@ -123,7 +126,6 @@ display: none; z-index: 1002; max-height: 300px; overflow-y: auto;
 .mine-녹 { background-color: #2ecc71; } .mine-황 { background-color: #f1c40f; } .mine-청 { background-color: #3498db; } .mine-적 { background-color: #e74c3c; }
 .special-mine { border: 2.5px solid #fff !important; box-shadow: 0 0 8px #fff, 0 0 12px #f00 !important; z-index: 1000 !important; }
 
-/* 상단 바 내부에 들어갈 버튼 스타일 */
 .top-bar-icon {
     width: 38px; 
     height: 38px; 
@@ -133,11 +135,7 @@ display: none; z-index: 1002; max-height: 300px; overflow-y: auto;
     box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
     transition: transform 0.2s ease-in-out; 
 }
-
-.top-bar-icon:hover {
-    transform: scale(1.1); 
-    border-color: #d4af37; 
-}
+.top-bar-icon:hover { transform: scale(1.1); border-color: #d4af37; }
 </style>
 </head>
 
@@ -166,32 +164,32 @@ display: none; z-index: 1002; max-height: 300px; overflow-y: auto;
 </div>
 
 <div id="dan-window">
-    <div style="background: #000; color: #fff; padding: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center;">
-        <span> 영단 정보</span>
-        <span onclick="toggleDanWindow()" style="cursor: pointer; font-size: 18px;">✖</span>
+    <div>
+        <span>🧪 영단 정보</span>
+        <span onclick="toggleDanWindow()" style="cursor: pointer; font-size: 18px; color: #fff;">✖</span>
     </div>
     <div id="dan-list-content" style="padding: 12px;"></div>
 </div>
 
 <div id="skill-window">
-    <div style="background: #000; color: #fff; padding: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;">
-        <span> 비급 정보</span>
-        <span onclick="toggleSkillWindow()" style="cursor: pointer; font-size: 18px;">✖</span>
+    <div>
+        <span>📜 비급 정보</span>
+        <span onclick="toggleSkillWindow()" style="cursor: pointer; font-size: 18px; color: #fff;">✖</span>
     </div>
     <div id="skill-list-content" style="padding: 12px;"></div>
 </div>
 
 <div id="blacksmith-window">
-    <div style="background: #000; color: #fff; padding: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;">
-        <span>🔨 대장장이 </span>
-        <span onclick="toggleBlacksmithWindow()" style="cursor: pointer; font-size: 18px;">✖</span>
+    <div>
+        <span>🔨 대장장이</span>
+        <span onclick="toggleBlacksmithWindow()" style="cursor: pointer; font-size: 18px; color: #fff;">✖</span>
     </div>
     <div id="blacksmith-list-content" style="padding: 12px;"></div>
 </div> 
 
 <div id="prob-window">
     <div>
-        <span>확률 정보</span>
+        <span>📊 확률 공개 정보</span>
         <span onclick="toggleProbWindow()" style="cursor: pointer; font-size: 18px; color: #fff;">✖</span>
     </div>
     <div id="prob-list-content" style="padding: 12px;"></div>
@@ -201,21 +199,18 @@ display: none; z-index: 1002; max-height: 300px; overflow-y: auto;
 <div id="copy-toast"><img src="images/forky.png" style="width: 25px; height: 25px;"><span id="toast-text">복사 완료!</span></div>
 
 <div id="controls-wrapper">
-    <div id="skill-btn" style="display: flex; align-items: center; cursor: pointer; margin-right: 12px;">
-        <img src="images/skill.png" class="top-bar-icon">
+    <div id="skill-btn" onclick="toggleSkillWindow()" style="display: flex; align-items: center; cursor: pointer; margin-right: 12px;">
+        <img src="images/skill.png" class="top-bar-icon" title="비급 정보">
     </div>
-
-    <div id="dan-btn" style="display: flex; align-items: center; cursor: pointer; margin-right: 12px;">
-        <img src="images/youngdan.png" class="top-bar-icon">
+    <div id="dan-btn" onclick="toggleDanWindow()" style="display: flex; align-items: center; cursor: pointer; margin-right: 12px;">
+        <img src="images/youngdan.png" class="top-bar-icon" title="영단 정보">
     </div>
-
     <div id="blacksmith-btn" onclick="toggleBlacksmithWindow()" style="display: flex; align-items: center; cursor: pointer; margin-right: 15px;">
-        <img src="images/blacksmith.png" class="top-bar-icon">
+        <img src="images/blacksmith.png" class="top-bar-icon" title="대장장이">
     </div>
-
     <div id="prob-btn" onclick="toggleProbWindow()" style="display: flex; align-items: center; cursor: pointer; margin-right: 12px;">
-    <img src="images/prob.png" class="top-bar-icon" title="확률 공개표">
-</div>
+        <img src="images/prob.png" class="top-bar-icon" title="확률 공개표">
+    </div>
 
     <a href="https://jeongsh214.github.io/herb_calculator/index.html" target="_blank" style="display: flex; align-items: center; gap: 6px; text-decoration: none; color: #000; margin-right: 15px;">
         <img src="images/herb.png" style="width: 38px; height: 38px; border: 2px solid #000; background: #fff; box-shadow: 3px 3px 0px rgba(0,0,0,0.2);">
