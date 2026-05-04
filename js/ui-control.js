@@ -671,7 +671,45 @@ L.popup()
 }, 600);
 }
 
+// [메인 퀘스트 정보창 제어]
+window.toggleMainQuestWindow = function() {
+    const win = document.getElementById('main-quest-window');
+    const skillWin = document.getElementById('skill-window');
+    const danWin = document.getElementById('dan-window');
+    const blacksmithWin = document.getElementById('blacksmith-window');
+    const probWin = document.getElementById('prob-window');
+    
+    if (!win) return;
 
+    if (win.style.display === 'none' || win.style.display === '') {
+        // 다른 모든 창 닫기 (네가 쓰던 방식 그대로!)
+        if (skillWin) skillWin.style.display = 'none';
+        if (danWin) danWin.style.display = 'none';
+        if (blacksmithWin) blacksmithWin.style.display = 'none';
+        if (probWin) probWin.style.display = 'none';
+        
+        win.style.display = 'block';
+        renderMainQuestData(); 
+    } else {
+        win.style.display = 'none';
+    }
+};
+
+function renderMainQuestData() {
+    const container = document.getElementById('main-quest-list-content');
+    if (!container || typeof mainQuestData === 'undefined') return;
+
+    container.innerHTML = mainQuestData.map(q => `
+        <div style="margin-bottom: 20px; border-bottom: 1px solid #3d3129; padding-bottom: 15px;">
+            <div style="font-weight: 900; color: #c5a368; font-size: 14px; margin-bottom: 8px;">
+                <span style="color: #d4af37; margin-right: 5px;">[메인]</span> ${q.title}
+            </div>
+            <div style="font-size: 12px; color: #b0a59a; line-height: 1.6; word-break: keep-all;">
+                ${q.info}
+            </div>
+        </div>
+    `).join('');
+}
 
 // [18] 비급 정보 제어 기능 (수정: 모든 창 배타적 제어)
 window.toggleSkillWindow = function() {
