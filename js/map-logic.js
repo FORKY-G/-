@@ -1,10 +1,11 @@
 // 1. 지도 초기 설정 및 커스텀 저작권 추가
 const map = L.map('map', {
+    preferCanvas: true,        // [최적화 추가] 렌더링 방식을 Canvas로 변경하여 렉 줄임
     crs: L.CRS.Simple,
     zoomSnap: 0,
     maxZoom: 3,
-    attributionControl: false, // [수정] 여기 뒤에 쉼표가 꼭 있어야 해!
-    zoomControl: false        // 기본 줌 버튼은 일단 끕니다.
+    attributionControl: false, 
+    zoomControl: false         // 기본 줌 버튼은 일단 끕니다.
 });
 
 // [추가] 줌 버튼을 다시 추가하고 상단 바 아래로 밀어내기
