@@ -99,6 +99,20 @@ Object.keys(minePaths).forEach(colorKey => {
     }).addTo(layers.mines[colorKey]); 
 });
 
+const monkData = npcData.find(n => n.name === "조사중인스님");
+const guData = npcData.find(n => n.name === "탐령구");
+let npcPolyline = null;
+
+if (monkData && guData) {
+    const monkPos = mcToPx(monkData.x, monkData.z);
+    const guPos = mcToPx(guData.x, guData.z);
+    
+    // 처음에는 opacity: 0 (숨김 상태)으로 선을 만들어 NPC 레이어에 추가합니다.
+    npcPolyline = L.polyline([monkPos, guPos], {
+        color: '#9b59b6', weight: 3, opacity: 0, dashArray: '6, 8'
+    }).addTo(layers.npc);
+}
+
 // [4] 좌표 복사 함수
 window.copyCoords = (x, y, z) => {
     const text = `${x} ${y} ${z}`; 
