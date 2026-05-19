@@ -99,6 +99,9 @@ Object.keys(minePaths).forEach(colorKey => {
     }).addTo(layers.mines[colorKey]); 
 });
 
+// --- [NPC 커스텀 퀘스트 동선 생성 구간] ---
+
+// 1) 조사중인 스님 > 탐령구 동선 생성
 const monkData = npcData.find(n => n.name === "조사중인스님");
 const guData = npcData.find(n => n.name === "탐령구");
 let npcPolyline = null;
@@ -106,10 +109,51 @@ let npcPolyline = null;
 if (monkData && guData) {
     const monkPos = mcToPx(monkData.x, monkData.z);
     const guPos = mcToPx(guData.x, guData.z);
-    
-    // 처음에는 opacity: 0 (숨김 상태)으로 선을 만들어 NPC 레이어에 추가합니다.
     npcPolyline = L.polyline([monkPos, guPos], {
         color: '#9b59b6', weight: 3, opacity: 0, dashArray: '6, 8'
+    }).addTo(layers.npc);
+}
+
+// 2) 기록서(사도연) > 풍잔객 > 고대의제작대(정적주) > 기록서(사도연) 동선 생성
+const recordSadoyen = npcData.find(n => n.name === "기록서(사도연)");
+const pungJanGek = npcData.find(n => n.name === "풍잔객");
+const jeongJeokJu = npcData.find(n => n.name === "고대의제작대(정적주)");
+let sadoyenPolyline = null;
+
+if (recordSadoyen && pungJanGek && jeongJeokJu) {
+    const rPos = mcToPx(recordSadoyen.x, recordSadoyen.z);
+    const pPos = mcToPx(pungJanGek.x, pungJanGek.z);
+    const jPos = mcToPx(jeongJeokJu.x, jeongJeokJu.z);
+    sadoyenPolyline = L.polyline([rPos, pPos, jPos, rPos], {
+        color: '#e67e22', weight: 3, opacity: 0, dashArray: '6, 8'
+    }).addTo(layers.npc);
+}
+
+// 3) 해진 > 해적선 > 백향초재배지 > 해진 동선 생성
+const haejinData = npcData.find(n => n.name === "해진");
+const pirateShip = npcData.find(n => n.name === "해적선");
+const herbFarm = npcData.find(n => n.name === "백향초재배지");
+let haejinPolyline = null;
+
+if (haejinData && pirateShip && herbFarm) {
+    const hjPos = mcToPx(haejinData.x, haejinData.z);
+    const psPos = mcToPx(pirateShip.x, pirateShip.z);
+    const hfPos = mcToPx(herbFarm.x, herbFarm.z);
+    haejinPolyline = L.polyline([hjPos, psPos, hfPos, hjPos], {
+        color: '#1abc9c', weight: 3, opacity: 0, dashArray: '6, 8'
+    }).addTo(layers.npc);
+}
+
+// 4) 연운객 > 시녀 동선 생성
+const yeonunData = npcData.find(n => n.name === "연운객");
+const maidData = npcData.find(n => n.name === "시녀");
+let yeonunPolyline = null;
+
+if (yeonunData && maidData) {
+    const yPos = mcToPx(yeonunData.x, yeonunData.z);
+    const mPos = mcToPx(maidData.x, maidData.z);
+    yeonunPolyline = L.polyline([yPos, mPos], {
+        color: '#e74c3c', weight: 3, opacity: 0, dashArray: '6, 8'
     }).addTo(layers.npc);
 }
 
@@ -343,6 +387,37 @@ npcData.forEach((npc) => {
     }
 
     const marker = L.marker(pos, { icon: currentIcon }).addTo(layers.npc);
+
+    // [마우스 오버 이벤트 바인딩 - 3대 신규 동선 연동 통합 포함]
+    marker.on('mouseover', () => {
+        if ((npc.name === "조사중인스님" || npc.name === "탐령구") && npcPolyline) {
+            npcPolyline.setStyle({ opacity: 0.8 });
+        }
+        if ((npc.name === "기록서(사도연)" || npc.name === "풍잔객" || npc.name === "고대의제작대(정적주)") && sadoyenPolyline) {
+            sadoyenPolyline.setStyle({ opacity: 0.8 });
+        }
+        if ((npc.name === "해진" || npc.name === "해적선" || npc.name === "백향초재배지") && haejinPolyline) {
+            haejinPolyline.setStyle({ opacity: 0.8 });
+        }
+        if ((npc.name === "연운객" || npc.name === "시녀") && yeonunPolyline) {
+            yeonunPolyline.setStyle({ opacity: 0.8 });
+        }
+    });
+
+    marker.on('mouseout', () => {
+        if ((npc.name === "조사중인스님" || npc.name === "탐령구") && npcPolyline) {
+            npcPolyline.setStyle({ opacity: 0 });
+        }
+        if ((npc.name === "기록서(사도연)" || npc.name === "풍잔객" || npc.name === "고대의제작대(정적주)") && sadoyenPolyline) {
+            sadoyenPolyline.setStyle({ opacity: 0 });
+        }
+        if ((npc.name === "해진" || npc.name === "해적선" || npc.name === "백향초재배지") && haejinPolyline) {
+            haejinPolyline.setStyle({ opacity: 0 });
+        }
+        if ((npc.name === "연운객" || npc.name === "시녀") && yeonunPolyline) {
+            yeonunPolyline.setStyle({ opacity: 0 });
+        }
+    });
 
     let craftHtml = '';
     if (npc.crafting && npc.crafting.length > 0) {
